@@ -8,3 +8,6 @@ round-end-system-round-restart-eta-announcement = Restarting the round in {$time
 
 eta-units-minutes = minutes
 eta-units-seconds = seconds
+
+shuttle-vote-user = "Server"
+shuttle-vote-title = "Call a shuttle to end the round?"
