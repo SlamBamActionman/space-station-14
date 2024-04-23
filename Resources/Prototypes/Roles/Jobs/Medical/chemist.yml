@@ -3,17 +3,13 @@
   name: job-name-chemist
   description: job-description-chemist
   playTimeTracker: JobChemist
-  requirements:
-    - !type:DepartmentTimeRequirement
-      department: Medical
-      time: 14400 #4 hrs
   startingGear: ChemistGear
   icon: "JobIconChemist"
   supervisors: job-supervisors-cmo
   access:
-  - Medical
-  - Chemistry
-  - Maintenance
+    - Medical
+    - Chemistry
+    - Maintenance
 
 - type: startingGear
   id: ChemistGear
@@ -22,4 +18,4 @@
     ears: ClothingHeadsetMedical
     belt: ChemBag
     pocket1: HandLabeler
-    # the purple glasses?
+    eyes: ClothingEyesGlassesChemical

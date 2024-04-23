@@ -3,12 +3,6 @@
   name: job-name-rd
   description: job-description-rd
   playTimeTracker: JobResearchDirector
-  requirements:
-    - !type:DepartmentTimeRequirement
-      department: Science
-      time: 36000 #10 hrs
-    - !type:OverallPlaytimeRequirement
-      time: 144000 #40 hrs
   weight: 10
   startingGear: ResearchDirectorGear
   icon: "JobIconResearchDirector"
@@ -16,18 +10,18 @@
   supervisors: job-supervisors-captain
   canBeAntag: false
   access:
-  - Research
-  - Command
-  - Maintenance
-  - ResearchDirector
-  - Brig
-  - Cryogenics
+    - Research
+    - Command
+    - Maintenance
+    - ResearchDirector
+    - Brig
+    - Cryogenics
   special:
-  - !type:AddImplantSpecial
-    implants: [ MindShieldImplant ]
-  - !type:AddComponentSpecial
-    components:
-      - type: CommandStaff
+    - !type:AddImplantSpecial
+      implants: [MindShieldImplant]
+    - !type:AddComponentSpecial
+      components:
+        - type: CommandStaff
 
 - type: startingGear
   id: ResearchDirectorGear
