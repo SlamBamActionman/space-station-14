@@ -3,24 +3,20 @@
   name: job-name-security
   description: job-description-security
   playTimeTracker: JobSecurityOfficer
-  requirements:
-    - !type:DepartmentTimeRequirement
-      department: Security
-      time: 36000 #10 hrs
   startingGear: SecurityOfficerGear
   icon: "JobIconSecurityOfficer"
   supervisors: job-supervisors-hos
   canBeAntag: false
   access:
-  - Security
-  - Brig
-  - Maintenance
-  - Service
-  - External
-  - Cryogenics
+    - Security
+    - Brig
+    - Maintenance
+    - Service
+    - External
+    - Cryogenics
   special:
-  - !type:AddImplantSpecial
-    implants: [ MindShieldImplant ]
+    - !type:AddImplantSpecial
+      implants: [MindShieldImplant]
 
 - type: startingGear
   id: SecurityOfficerGear
