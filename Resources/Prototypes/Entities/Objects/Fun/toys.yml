@@ -290,6 +290,35 @@
           Quantity: 10
 
 - type: entity
+  parent: BasePlushie
+  id: PlushieAxolotl #Blup!
+  name: axolotl plushie
+  description: A silly little stuffed plushie resembling an Axolotl. Made by the crew to direct CentCom's attention to the recent rise in outlaws.
+  components:
+  - type: Sprite
+    state: plushie_axolotl
+  - type: EmitSoundOnUse
+    sound:
+      path: /Audio/Items/Toys/blup.ogg
+  - type: EmitSoundOnLand
+    sound:
+      path: /Audio/Items/Toys/blup.ogg
+  - type: EmitSoundOnActivate
+    sound:
+      path: /Audio/Items/Toys/blup.ogg
+  - type: EmitSoundOnTrigger
+    sound:
+      path: /Audio/Items/Toys/blup.ogg
+  - type: Food
+    requiresSpecialDigestion: true
+    useSound:
+      path: /Audio/Items/Toys/blup.ogg
+  - type: MeleeWeapon
+    wideAnimationRotation: 180
+    soundHit:
+      path: /Audio/Items/Toys/blup.ogg
+
+- type: entity
   parent: PlushieLizard
   id: PlushieLizardMirrored
   components:
