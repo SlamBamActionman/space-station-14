@@ -18,6 +18,7 @@
         - PlushieAtmosian
         - PlushieNuke
         - PlushieLizard
+        - PlushieAxolotl
         - PlushieNar
         - PlushieCarp
         - PlushieSlime
@@ -84,55 +85,55 @@
           state: figurine_spawner
     - type: RandomSpawner
       rarePrototypes:
-      - ToyFigurineNukieElite
-      - ToyFigurineNukieCommander
+        - ToyFigurineNukieElite
+        - ToyFigurineNukieCommander
       rareChance: 0.05
       prototypes:
-      - ToyFigurinePassenger
-      - ToyFigurineClown
-      - ToyFigurineMime
-      - ToyFigurineMusician
-      - ToyFigurineBoxer
-      - ToyFigurineCaptain
-      - ToyFigurineHeadOfSecurity
-      - ToyFigurineWarden
-      - ToyFigurineDetective
-      - ToyFigurineSecurity
-      - ToyFigurineLawyer
-      - ToyFigurineCargoTech
-      - ToyFigurineSalvage
-      - ToyFigurineQuartermaster   
-      - ToyFigurineChiefEngineer
-      - ToyFigurineAtmosTech
-      - ToyFigurineEngineer
-      - ToyFigurineResearchDirector
-      - ToyFigurineScientist
-      - ToyFigurineChiefMedicalOfficer
-      - ToyFigurineChemist
-      - ToyFigurineParamedic
-      - ToyFigurineMedicalDoctor
-      - ToyFigurineHeadOfPersonnel
-      - ToyFigurineLibrarian
-      - ToyFigurineChaplain
-      - ToyFigurineChef
-      - ToyFigurineBartender
-      - ToyFigurineBotanist
-      - ToyFigurineJanitor
-      - ToyFigurineNukie
-      - ToyFigurineFootsoldier
-      - ToyFigurineWizardFake
-      - ToyFigurineSlime
-      - ToyFigurineGreytider
-      - ToyFigurineWizard
-      - ToyGriffin
-      - ToyOwlman
-      - ToySkeleton
-      - ToyFigurineQueen
-      - ToyFigurineSpaceDragon
-      - ToyFigurineRatKing
-      - ToyFigurineRatServant
-      - ToyFigurineMouse
-      - ToyFigurineHamlet
-      - ToyFigurineThief
+        - ToyFigurinePassenger
+        - ToyFigurineClown
+        - ToyFigurineMime
+        - ToyFigurineMusician
+        - ToyFigurineBoxer
+        - ToyFigurineCaptain
+        - ToyFigurineHeadOfSecurity
+        - ToyFigurineWarden
+        - ToyFigurineDetective
+        - ToyFigurineSecurity
+        - ToyFigurineLawyer
+        - ToyFigurineCargoTech
+        - ToyFigurineSalvage
+        - ToyFigurineQuartermaster
+        - ToyFigurineChiefEngineer
+        - ToyFigurineAtmosTech
+        - ToyFigurineEngineer
+        - ToyFigurineResearchDirector
+        - ToyFigurineScientist
+        - ToyFigurineChiefMedicalOfficer
+        - ToyFigurineChemist
+        - ToyFigurineParamedic
+        - ToyFigurineMedicalDoctor
+        - ToyFigurineHeadOfPersonnel
+        - ToyFigurineLibrarian
+        - ToyFigurineChaplain
+        - ToyFigurineChef
+        - ToyFigurineBartender
+        - ToyFigurineBotanist
+        - ToyFigurineJanitor
+        - ToyFigurineNukie
+        - ToyFigurineFootsoldier
+        - ToyFigurineWizardFake
+        - ToyFigurineSlime
+        - ToyFigurineGreytider
+        - ToyFigurineWizard
+        - ToyGriffin
+        - ToyOwlman
+        - ToySkeleton
+        - ToyFigurineQueen
+        - ToyFigurineSpaceDragon
+        - ToyFigurineRatKing
+        - ToyFigurineRatServant
+        - ToyFigurineMouse
+        - ToyFigurineHamlet
+        - ToyFigurineThief
       chance: 0.90
       offset: 0.2

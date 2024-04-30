@@ -14,6 +14,7 @@
       - id: PlushieSnake
       - id: PlushieLizard
       - id: PlushieSpaceLizard
+      - id: PlushieAxolotl
       - id: PlushieVox
       - id: PlushieRouny
       - id: PlushieRatvar
@@ -41,6 +42,17 @@
         amount: 3
       - id: PlushieSpaceLizard
         amount: 2
+
+- type: entity
+  id: CrateFunAxolotlPlushieBulk
+  parent: CrateGenericSteel
+  name: bulk axolotl plushie crate
+  description: A TON of little axolotl plushies. Throw them around and send a message to NT!
+  components:
+  - type: StorageFill
+    contents:
+      - id: PlushieAxolotl
+        amount: 10
 
 - type: entity
   id: CrateFunInstrumentsVariety
