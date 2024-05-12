@@ -1,0 +1,14 @@
+- type: entity
+  name: photo
+  parent: BaseItem
+  id: Photo
+  description: More than a thousand words.
+  components:
+  - type: Photo
+  - type: UserInterface
+    interfaces:
+        enum.PhotoUiKey.Photo:
+          type: PhotoBoundUserInterface
+  - type: Sprite
+    sprite: Objects/Tools/crowbar.rsi
+    state: icon
