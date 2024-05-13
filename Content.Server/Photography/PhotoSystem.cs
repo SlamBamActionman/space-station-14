@@ -2,6 +2,7 @@ using Content.Server.DeviceNetwork;
 using Content.Server.DeviceNetwork.Components;
 using Content.Server.DeviceNetwork.Systems;
 using Content.Server.Emp;
+using Content.Server.Maps;
 using Content.Server.Power.Components;
 using Content.Shared.ActionBlocker;
 using Content.Shared.DeviceNetwork;
@@ -9,116 +10,116 @@ using Content.Shared.Interaction;
 using Content.Shared.Photography;
 using Content.Shared.Verbs;
 using Robust.Server.GameObjects;
+using Robust.Shared.Map;
+using Content.Server.Polymorph.Systems;
+using Content.Shared.Polymorph;
+using Content.Shared.Polymorph.Components;
+using Content.Shared.Polymorph.Systems;
+using Robust.Server.Player;
 using Robust.Shared.Player;
 using Robust.Shared.Prototypes;
+using Content.Shared.Item;
+using Robust.Shared.Utility;
+using Robust.Shared.Enums;
 
 namespace Content.Server.Photography;
 
-public sealed class PhotoSystem : EntitySystem
+public sealed partial class PhotoSystem : SharedPhotoSystem
 {
 
     [Dependency] private readonly ViewSubscriberSystem _viewSubscriberSystem = default!;
-    [Dependency] private readonly ActionBlockerSystem _actionBlocker = default!;
+    [Dependency] private readonly IMapManager _mapManager = default!;
+    [Dependency] private readonly EyeSystem _eye = default!;
     [Dependency] private readonly UserInterfaceSystem _userInterface = default!;
+    [Dependency] private readonly SharedAppearanceSystem _appearanceSystem = default!;
+    [Dependency] private readonly PolymorphSystem _polymorph = default!;
+    [Dependency] private readonly SharedSpriteSaverSystem _spriteSaverSystem = default!;
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<PhotoComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<PhotoComponent, GetVerbsEvent<UtilityVerb>>(OnUtilityVerb);
+        /*SubscribeLocalEvent<PhotoComponent, ComponentShutdown>(OnShutdown);
         SubscribeLocalEvent<PhotoComponent, InteractUsingEvent>(OnInteractUsing);
+        SubscribeLocalEvent<PhotoComponent, ComponentInit>(OnComponentInit);*/
+        SubscribeNetworkEvent<PhotoStopViewingEvent>(OnStopViewing);
+        SubscribeLocalEvent<PhotoSessionComponent, ActivateInWorldEvent>(OnPhotoActivate);
+        SubscribeLocalEvent<PhotoViewerComponent, PlayerDetachedEvent>(OnViewerDetached);
+        SubscribeLocalEvent<PhotoSessionComponent, ComponentShutdown>(OnSessionShutdown);
+        SubscribeLocalEvent<PhotoViewerComponent, ComponentShutdown>(OnViewerShutdown);
+        SubscribeLocalEvent<PhotoSessionComponent, GetVerbsEvent<ActivationVerb>>(AddPlayGameVerb);
 
-        Subs.BuiEvents<PhotoComponent>(PhotoUiKey.Photo, subs =>
-        {
-            subs.Event<BoundUIClosedEvent>(OnBoundUiClose);
-        });
-    }
-    private void OnBoundUiClose(Entity<PhotoComponent> ent, ref BoundUIClosedEvent args)
-    {
-        RemoveActiveViewer(ent, args.Actor);
-    }
-
-    public void AddActiveViewer(Entity<PhotoComponent> ent, EntityUid player, ActorComponent? actor = null)
-    {
-        if (!Resolve(player, ref actor))
-        {
-            return;
-        }
-
-        _viewSubscriberSystem.AddViewSubscriber(ent.Owner, actor.PlayerSession); //Replace ent.Owner with ent.Comp.PhotoEntity
-        ent.Comp.ActiveViewers.Add(player);
+        InitializeMap();
     }
 
-    public void RemoveActiveViewer(Entity<PhotoComponent> ent, EntityUid player, ActorComponent? actor = null)
+    private void OnSessionShutdown(Entity<PhotoSessionComponent> ent, ref ComponentShutdown args)
     {
-        if (!Resolve(player, ref actor))
-        {
-            return;
-        }
-
-        _viewSubscriberSystem.RemoveViewSubscriber(ent.Owner, actor.PlayerSession); //Replace ent.Owner with ent.Comp.PhotoEntity
-        ent.Comp.ActiveViewers.Remove(player);
+        CleanupSession(ent.Owner);
     }
 
-    private void OnUtilityVerb(Entity<PhotoComponent> ent, ref GetVerbsEvent<UtilityVerb> args)
+    private void OnViewerShutdown(Entity<PhotoViewerComponent> ent, ref ComponentShutdown args)
     {
-        if (!args.CanInteract || !args.CanAccess)
+        if (!EntityManager.TryGetComponent(ent.Owner, out ActorComponent? actor))
             return;
 
-        var user = args.User;
+        if (ent.Comp.Photo.IsValid())
+            CloseSessionFor(actor.PlayerSession, ent.Comp.Photo);
+    }
 
-        var verb = new UtilityVerb()
+    private void OnPhotoActivate(EntityUid uid, PhotoSessionComponent component, ActivateInWorldEvent args)
+    {
+        // Check that a player is attached to the entity.
+        if (!EntityManager.TryGetComponent(args.User, out ActorComponent? actor))
+            return;
+
+        OpenSessionFor(actor.PlayerSession, uid);
+    }
+
+    private void OnStopViewing(PhotoStopViewingEvent msg, EntitySessionEventArgs args)
+    {
+        CloseSessionFor(args.SenderSession, GetEntity(msg.PhotoUid));
+    }
+
+    private void OnViewerDetached(EntityUid uid, PhotoViewerComponent component, PlayerDetachedEvent args)
+    {
+        if (component.Photo.IsValid())
+            CloseSessionFor(args.Player, component.Photo);
+    }
+
+    private void AddPlayGameVerb(EntityUid uid, PhotoSessionComponent component, GetVerbsEvent<ActivationVerb> args)
+    {
+        if (!args.CanAccess || !args.CanInteract)
+            return;
+
+        if (!EntityManager.TryGetComponent(args.User, out ActorComponent? actor))
+            return;
+
+        var playVerb = new ActivationVerb()
         {
-            Act = () => ViewPhoto(ent, user),
-            IconEntity = GetNetEntity(ent.Owner),
-            Text = Loc.GetString("forensic-scanner-verb-text"),
-            Message = Loc.GetString("forensic-scanner-verb-message")
+            Text = "Debug View Photo",
+            Icon = new SpriteSpecifier.Texture(new("/Textures/Interface/VerbIcons/die.svg.192dpi.png")),
+            Act = () => OpenSessionFor(actor.PlayerSession, uid)
         };
 
-        args.Verbs.Add(verb);
+        args.Verbs.Add(playVerb);
     }
 
-    private void OnInteractUsing(Entity<PhotoComponent> ent, ref InteractUsingEvent args)
+    public override void Update(float frameTime)
     {
-        ViewPhoto(ent, args.User);
-    }
+        base.Update(frameTime);
 
-    private void ViewPhoto(Entity<PhotoComponent> ent, EntityUid player)
-    {
-        if (!_userInterface.TryOpenUi(ent.Owner, PhotoUiKey.Photo, player))
-            return;
-    }
-
-    private void OnShutdown(Entity<PhotoComponent> ent, ref ComponentShutdown args)
-    {
-        Deactivate(ent);
-    }
-
-    private void Deactivate(Entity<PhotoComponent> ent)
-    {
-
-        var ev = new PhotoDeactivateEvent(ent);
-
-        RemoveActiveViewers(ent, new(ent.Comp.ActiveViewers));
-
-        // Send a local event that's broadcasted everywhere afterwards.
-        RaiseLocalEvent(ev);
-    }
-    public void RemoveActiveViewers(Entity<PhotoComponent> ent, HashSet<EntityUid> players)
-    {
-        foreach (var player in players)
+        var query = EntityQueryEnumerator<PhotoViewerComponent>();
+        while (query.MoveNext(out var uid, out var viewer))
         {
-            RemoveActiveViewer(ent, player);
+            if (!Exists(viewer.Photo))
+                continue;
+
+            if (!TryComp(uid, out ActorComponent? actor))
+            {
+                EntityManager.RemoveComponent<PhotoViewerComponent>(uid);
+                return;
+            }
+
+            if (actor.PlayerSession.Status != SessionStatus.InGame || !CanSeePhoto(uid, viewer.Photo))
+                CloseSessionFor(actor.PlayerSession, viewer.Photo);
         }
     }
-
-    public sealed class PhotoDeactivateEvent : EntityEventArgs
-    {
-        public EntityUid Photo { get; }
-
-        public PhotoDeactivateEvent(EntityUid photo)
-        {
-            Photo = photo;
-        }
-    }
-
 }

@@ -11,56 +11,15 @@ using Robust.Shared.Prototypes;
 namespace Content.Client.Photography;
 
 [GenerateTypedNameReferences]
-public sealed partial class PhotoWindow : DefaultWindow
-{
-    [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
-    [Dependency] private readonly IResourceCache _resourceCache = default!;
+public sealed partial class PhotoWindow : DefaultWindow {
 
-    private bool _isSwitching;
-    private readonly FixedEye _defaultEye = new();
-
-    public PhotoWindow()
+    public PhotoWindow(IEye? eye, Vector2i size)
     {
         RobustXamlLoader.Load(this);
-        IoCManager.InjectDependencies(this);
 
-        // This could be done better. I don't want to deal with stylesheets at the moment.
-        var texture = _resourceCache.GetTexture("/Textures/Interface/Nano/square_black.png");
-        var shader = _prototypeManager.Index<ShaderPrototype>("CameraStatic").Instance().Duplicate();
+        PhotoView.Eye = eye;
+        PhotoView.ViewportSize = size;
 
-        PhotoView.ViewportSize = new Vector2i(500, 500);
-        PhotoView.Eye = _defaultEye; // sure
-        PhotoViewBackground.Stretch = TextureRect.StretchMode.Scale;
-        PhotoViewBackground.Texture = texture;
-        PhotoViewBackground.ShaderOverride = shader;
-    }
-
-    // The UI class should get the eye from the entity, and then
-    // pass it here so that the UI can change its view.
-    public void UpdateState(IEye? eye)
-    {
-        SetCameraView(eye);
-    }
-
-    private void SetCameraView(IEye? eye)
-    {
-        var eyeChanged = eye != PhotoView.Eye || PhotoView.Eye == null;
-        PhotoView.Eye = eye ?? _defaultEye;
-        PhotoView.Visible = !eyeChanged && !_isSwitching;
-
-        if (eye != null)
-        {
-            if (!eyeChanged)
-            {
-                return;
-            }
-
-            _isSwitching = true;
-            PhotoViewBackground.Visible = true;
-        }
-        else
-        {
-            PhotoViewBackground.Visible = true;
-        }
+        OpenCentered();
     }
 }

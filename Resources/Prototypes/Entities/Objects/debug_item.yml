@@ -4,11 +4,16 @@
   id: Photo
   description: More than a thousand words.
   components:
-  - type: Photo
-  - type: UserInterface
-    interfaces:
-        enum.PhotoUiKey.Photo:
-          type: PhotoBoundUserInterface
+  - type: PhotoSession
+  - type: Sprite
+    sprite: Objects/Tools/emag.rsi
+    state: icon
+
+- type: entity
+  name: fake item
+  id: PhotoFakeItem
+  description: If you read this, you're an admin!
+  components:
   - type: Sprite
     sprite: Objects/Tools/crowbar.rsi
     state: icon
