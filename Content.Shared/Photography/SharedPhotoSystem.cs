@@ -2,6 +2,8 @@ using Robust.Shared.GameStates;
 using Content.Shared.ActionBlocker;
 using Robust.Shared.Serialization;
 using Content.Shared.Interaction;
+using Robust.Shared.GameObjects;
+using Robust.Shared.Player;
 using Robust.Shared.Map;
 
 namespace Content.Shared.Photography;
@@ -35,12 +37,14 @@ public sealed class PhotoViewEvent : EntityEventArgs
     public NetEntity PhotoUid;
     public NetEntity CameraUid;
     public Vector2i Size;
+    public Angle CameraAngle;
 
-    public PhotoViewEvent(NetEntity photoUid, NetEntity cameraUid, Vector2i size)
+    public PhotoViewEvent(NetEntity photoUid, NetEntity cameraUid, Vector2i size, Angle cameraAngle)
     {
         PhotoUid = photoUid;
         CameraUid = cameraUid;
         Size = size;
+        CameraAngle = cameraAngle;
     }
 }
 
@@ -60,3 +64,28 @@ public sealed class PhotoStopViewingEvent : EntityEventArgs
         PhotoUid = photoUid;
     }
 }
+
+[Serializable, NetSerializable]
+public sealed class QueryPhotoRotationEvent : EntityEventArgs
+{
+    public NetEntity PhotoUid { get; private set; }
+
+    public QueryPhotoRotationEvent(NetEntity photoUid)
+    {
+        PhotoUid = photoUid;
+    }
+}
+
+[Serializable, NetSerializable]
+public sealed class ProvidePhotoRotationEvent : EntityEventArgs
+{
+    public Angle Rotation { get; private set; }
+    public NetEntity PhotoUid { get; private set; }
+
+    public ProvidePhotoRotationEvent(Angle rotation, NetEntity photoUid)
+    {
+        Rotation = rotation;
+        PhotoUid = photoUid;
+    }
+}
+

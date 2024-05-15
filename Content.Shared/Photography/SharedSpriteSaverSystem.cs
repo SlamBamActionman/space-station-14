@@ -4,16 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Robust.Shared.Serialization;
+using Robust.Shared.Player;
 
 namespace Content.Shared.Photography;
 
 public abstract class SharedSpriteSaverSystem : EntitySystem
 {
 
-    public void SetSourceEntity(EntityUid dest, EntityUid source)
+    public void SetSourceEntity(EntityUid dest, EntityUid source, ICommonSession player)
     {
         Logger.Debug("SetSourceEntity ran");
-        RaiseNetworkEvent(new SpriteSaverSourceEvent(EntityManager.GetNetEntity(source), EntityManager.GetNetEntity(dest)));
+        RaiseNetworkEvent(new SpriteSaverSourceEvent(EntityManager.GetNetEntity(source), EntityManager.GetNetEntity(dest)), player.Channel);
     }
 
 }

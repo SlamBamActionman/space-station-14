@@ -6,14 +6,24 @@
   components:
   - type: PhotoSession
   - type: Sprite
-    sprite: Objects/Tools/emag.rsi
-    state: icon
+    sprite: Structures/Specific/Anomalies/flora_anom.rsi
+    state: anom
 
 - type: entity
   name: fake item
   id: PhotoFakeItem
   description: If you read this, you're an admin!
+
+- type: entity
+  name: photo camera entity
+  id: PhotoCameraEntity
+
+- type: entity
+  name: polaroid camera
+  id: PolaroidCamera
+  parent: BaseItem
   components:
+  - type: Photography
   - type: Sprite
-    sprite: Objects/Tools/crowbar.rsi
-    state: icon
+    sprite: Objects/Materials/ingots.rsi
+    state: adamantine

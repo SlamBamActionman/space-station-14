@@ -20,6 +20,8 @@ namespace Content.Client.Photography;
 public sealed class PhotoSytem : SharedPhotoSystem
 {
     [Dependency] private readonly IPlayerManager _playerManager = default!;
+    [Dependency] private readonly EyeSystem _eye = default!;
+
     private DefaultWindow? _window; // Current open tabletop window (only allow one at a time)
     private EntityUid? _photo; // The table entity of the currently open game session
 
@@ -28,6 +30,7 @@ public sealed class PhotoSytem : SharedPhotoSystem
         base.Initialize();
 
         SubscribeNetworkEvent<PhotoViewEvent>(OnPhotoView);
+        SubscribeNetworkEvent<QueryPhotoRotationEvent>(OnRotationQuery);
     }
 
     public override void FrameUpdate(float frameTime)
@@ -66,6 +69,11 @@ public sealed class PhotoSytem : SharedPhotoSystem
             Log.Error("Camera entity does not have eye component!");
             return;
         }
+        else
+        {
+            _eye.SetRotation(camera, msg.CameraAngle);
+            Logger.Debug(msg.CameraAngle.ToString());
+        }
 
         // Create a window to contain the viewport
         _window = new PhotoWindow(eyeComponent.Eye, (msg.Size.X, msg.Size.Y))
@@ -85,5 +93,14 @@ public sealed class PhotoSytem : SharedPhotoSystem
         }
 
         _window = null;
+    }
+
+    private void OnRotationQuery(QueryPhotoRotationEvent msg)
+    {
+        Angle angle = Angle.Zero;
+        if (TryComp(_playerManager.LocalEntity, out EyeComponent? eyeComp)) {
+            angle = eyeComp.Rotation;
+        }
+        RaiseNetworkEvent(new ProvidePhotoRotationEvent(angle, msg.PhotoUid));
     }
 }

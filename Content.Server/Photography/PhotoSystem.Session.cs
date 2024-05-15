@@ -5,12 +5,19 @@ using Robust.Shared.Map.Components;
 using Robust.Shared.Player;
 using Robust.Shared.Utility;
 using Content.Shared.Photography;
-using Robust.Shared.GameObjects;
+using Robust.Shared.Containers;
+using Robust.Server.GameObjects;
+using Serilog.Configuration;
 
 namespace Content.Server.Photography;
 public sealed partial class PhotoSystem
 {
-    public PhotoSession EnsureSession(PhotoSessionComponent comp)
+
+    [Dependency] private readonly EntityLookupSystem _lookup = default!;
+    [Dependency] private readonly TransformSystem _transformSystem = default!;
+    [Dependency] private readonly SharedContainerSystem _containerSystem = default!;
+
+    public PhotoSession EnsureSession(PhotoSessionComponent comp, ICommonSession player)
     {
         // We already have a session, return it
         // TODO: if tables are connected, treat them as a single entity. This can be done by sharing the session.
@@ -24,13 +31,47 @@ public sealed partial class PhotoSystem
         var session = new PhotoSession(PhotoMap, GetNextTabletopPosition());
         comp.Session = session;
 
+        var angle = new Angle();
+        var centerpos = Vector2.Zero;
+
+        centerpos = _transformSystem.GetWorldPosition(comp.Owner);
+        Logger.Debug(centerpos.ToString());
+
         // Since this is the first time opening this session, set up the game
-        //SetupTabletop(session, EntityManager); THIS MUST BE ADDED TO MAKE THE THINGS HAPPEN!!!!
-        var board = EntityManager.SpawnEntity("PhotoFakeItem", session.Position.Offset(0, 0));
+        var entities = _lookup.GetEntitiesInRange(comp.Owner, 7, LookupFlags.Uncontained);
+        /*if (TryComp(player.AttachedEntity, out EyeComponent? eyeComp)) {
+            angle = eyeComp.Rotation;
+        }
+        comp.CameraAngle = angle;*/
+
+        RaiseNetworkEvent(new QueryPhotoRotationEvent(GetNetEntity(comp.Owner)), player.Channel);
+
+        foreach (var ent in entities)
+        {
+            //if (_containerSystem.IsEntityOrParentInContainer(ent))
+            //    break;
+
+            var pos = _transformSystem.GetWorldPosition(ent) - centerpos;
+
+            //Vector2.Transform(point - origin, Matrix.CreateRotationZ(rotation)) + origin;
+
+            var fakeItem = EntityManager.SpawnEntity("PhotoFakeItem", session.Position.Offset(pos));
+            session.Entities.Add(fakeItem);
+
+            Logger.Debug(fakeItem.ToString());
+
+            _transformSystem.SetWorldRotation(fakeItem, _transformSystem.GetWorldRotation(ent));
+
+            var spriteSaverComp = EnsureComp<SpriteSaverComponent>(fakeItem);
+            _spriteSaverSystem.SetSourceEntity(fakeItem, ent, player);
+            _appearanceSystem.CopyData(ent, fakeItem);
+        }
+
+        /*var board = EntityManager.SpawnEntity("PhotoFakeItem", session.Position.Offset(0, 0));
         session.Entities.Add(board);
         var spriteSaverComp = EnsureComp<SpriteSaverComponent>(board);
-        _spriteSaverSystem.SetSourceEntity(board, comp.Owner);
-        _appearanceSystem.CopyData(comp.Owner, board);
+        _spriteSaverSystem.SetSourceEntity(board, comp.Owner, player);
+        _appearanceSystem.CopyData(comp.Owner, board);*/
 
         Log.Info($"Created tabletop session number {comp} at position {session.Position}.");
 
@@ -73,7 +114,7 @@ public sealed partial class PhotoSystem
             return;
 
         // Make sure we have a session, and add the player to it if not added already.
-        var session = EnsureSession(photo);
+        var session = EnsureSession(photo, player);
 
         if (session.Players.ContainsKey(player))
             return;
@@ -90,7 +131,7 @@ public sealed partial class PhotoSystem
         session.Players[player] = camera;
 
         // Tell the gamer to open a viewport for the tabletop game
-        RaiseNetworkEvent(new PhotoViewEvent(GetNetEntity(uid), GetNetEntity(camera), photo.Size), player.Channel);
+        RaiseNetworkEvent(new PhotoViewEvent(GetNetEntity(uid), GetNetEntity(camera), photo.Size, photo.CameraAngle), player.Channel);
     }
 
     /// <summary>
@@ -137,7 +178,9 @@ public sealed partial class PhotoSystem
         var session = photo.Session!;
 
         // Spawn an empty entity at the coordinates
-        var camera = EntityManager.SpawnEntity(null, session.Position.Offset(offset));
+        var camera = EntityManager.SpawnEntity("PhotoCameraEntity", session.Position.Offset(offset));
+
+        Logger.Debug(camera.ToString());
 
         // Add an eye component and disable FOV
         var eyeComponent = EnsureComp<EyeComponent>(camera);

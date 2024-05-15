@@ -21,6 +21,12 @@ public sealed partial class PhotoSessionComponent : Component
     public Vector2 CameraZoom { get; private set; } = Vector2.One;
 
     /// <summary>
+    /// Angle of the camera when photo was taken.
+    /// </summary>
+    [DataField]
+    public Angle CameraAngle { get; set; } = Angle.Zero;
+
+    /// <summary>
     /// The specific session of this tabletop.
     /// </summary>
     [ViewVariables]

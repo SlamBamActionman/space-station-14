@@ -41,6 +41,7 @@ public sealed partial class PhotoSystem : SharedPhotoSystem
         SubscribeLocalEvent<PhotoComponent, InteractUsingEvent>(OnInteractUsing);
         SubscribeLocalEvent<PhotoComponent, ComponentInit>(OnComponentInit);*/
         SubscribeNetworkEvent<PhotoStopViewingEvent>(OnStopViewing);
+        SubscribeNetworkEvent<ProvidePhotoRotationEvent>(OnRotationProvided);
         SubscribeLocalEvent<PhotoSessionComponent, ActivateInWorldEvent>(OnPhotoActivate);
         SubscribeLocalEvent<PhotoViewerComponent, PlayerDetachedEvent>(OnViewerDetached);
         SubscribeLocalEvent<PhotoSessionComponent, ComponentShutdown>(OnSessionShutdown);
@@ -48,6 +49,13 @@ public sealed partial class PhotoSystem : SharedPhotoSystem
         SubscribeLocalEvent<PhotoSessionComponent, GetVerbsEvent<ActivationVerb>>(AddPlayGameVerb);
 
         InitializeMap();
+    }
+    public void InitializePhoto(EntityUid initializer, PhotoSessionComponent comp)
+    {
+        if (!EntityManager.TryGetComponent(initializer, out ActorComponent? actor))
+            return;
+
+        EnsureSession(comp, actor.PlayerSession);
     }
 
     private void OnSessionShutdown(Entity<PhotoSessionComponent> ent, ref ComponentShutdown args)
@@ -82,6 +90,13 @@ public sealed partial class PhotoSystem : SharedPhotoSystem
     {
         if (component.Photo.IsValid())
             CloseSessionFor(args.Player, component.Photo);
+    }
+
+    private void OnRotationProvided(ProvidePhotoRotationEvent msg)
+    {
+        if (TryComp(GetEntity(msg.PhotoUid), out PhotoSessionComponent? comp)) {
+            comp.CameraAngle = msg.Rotation;
+        }
     }
 
     private void AddPlayGameVerb(EntityUid uid, PhotoSessionComponent component, GetVerbsEvent<ActivationVerb> args)

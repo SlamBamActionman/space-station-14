@@ -23,8 +23,15 @@ public sealed partial class SpriteSaverSystem : SharedSpriteSaverSystem
         if (destEnt == null)
             return;
 
+        Logger.Debug(destEnt.ToString() ?? "Nothing");
+
         SpriteSaverComponent comp = EnsureComp<SpriteSaverComponent>(destEnt.Value);
         comp.RsiPath = ev.RsiPath;
         comp.Layers = ev.Layers;
+        comp.SnapCardinals = ev.SnapCardinals;
+        comp.Visible = ev.Visible;
+        comp.DrawDepth = ev.DrawDepth;
+
+        Dirty(comp);
     }
 }
