@@ -22,6 +22,9 @@ public sealed partial class SpriteSaverComponent : Component
     public bool SnapCardinals;
 
     [ViewVariables, AutoNetworkedField]
+    public bool ScreenLock;
+
+    [ViewVariables, AutoNetworkedField]
     public bool Visible;
 
     [ViewVariables, AutoNetworkedField]

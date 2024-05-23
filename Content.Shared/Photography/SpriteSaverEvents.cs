@@ -18,16 +18,19 @@ public sealed class SpriteSaverEvent : EntityEventArgs
 
     public bool SnapCardinals;
 
+    public bool ScreenLock;
+
     public bool Visible;
 
     public int DrawDepth;
 
-    public SpriteSaverEvent(NetEntity destination, string rsiPath, List<LayersStruct> layers, bool snapCardinals, bool visible, int drawDepth)
+    public SpriteSaverEvent(NetEntity destination, string rsiPath, List<LayersStruct> layers, bool snapCardinals, bool screenLock, bool visible, int drawDepth)
     {
         Destination = destination;
         RsiPath = rsiPath;
         Layers = layers;
         SnapCardinals = snapCardinals;
+        ScreenLock = screenLock;
         Visible = visible;
         DrawDepth = drawDepth;
     }

@@ -29,6 +29,7 @@ public sealed partial class SpriteSaverSystem : SharedSpriteSaverSystem
         comp.RsiPath = ev.RsiPath;
         comp.Layers = ev.Layers;
         comp.SnapCardinals = ev.SnapCardinals;
+        comp.ScreenLock = ev.ScreenLock;
         comp.Visible = ev.Visible;
         comp.DrawDepth = ev.DrawDepth;
 

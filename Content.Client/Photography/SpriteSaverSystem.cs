@@ -27,7 +27,7 @@ public sealed partial class SpriteSaverSystem : SharedSpriteSaverSystem
 
     private void OnComponentInit(EntityUid uid, SpriteSaverComponent component, ComponentInit args)
     {
-        ApplySpriteData(uid, component.RsiPath, component.Layers, component.SnapCardinals, component.Visible, component.DrawDepth);
+        ApplySpriteData(uid, component.RsiPath, component.Layers, component.SnapCardinals, component.ScreenLock, component.Visible, component.DrawDepth);
         Logger.Debug(uid.ToString());
     }
 
@@ -53,24 +53,24 @@ public sealed partial class SpriteSaverSystem : SharedSpriteSaverSystem
         int i = 0;
         foreach(var layer in sprite.AllLayers)
         {
-            var layerStruct = new SpriteSaverEvent.LayersStruct(layer.AnimationFrame, sprite.LayerGetState(i).Name, layer.Rsi?.Path.ToString() ?? null, (byte)layer.DirOffset, layer.Visible);
-            Logger.Debug(sprite.LayerGetState(i).Name ?? "It was null!");
+            var layerStruct = new SpriteSaverEvent.LayersStruct(layer.AnimationFrame, sprite.LayerGetState(i).Name, layer.ActualRsi!.Path.ToString() ?? null, (byte)layer.DirOffset, layer.Visible);
+            Logger.Debug(layer.Rsi?.Path.ToString() ?? "No layer RSI supplied");
             layerStructs.Add(layerStruct);
             i++;
         }
 
 
-        RaiseNetworkEvent(new SpriteSaverEvent(dest, sprite.BaseRSI.Path.ToString(), layerStructs, sprite.SnapCardinals, sprite.Visible, sprite.DrawDepth));
+        RaiseNetworkEvent(new SpriteSaverEvent(dest, sprite.BaseRSI.Path.ToString(), layerStructs, sprite.SnapCardinals, sprite.NoRotation, sprite.Visible, sprite.DrawDepth));
 
         var clientEntity = GetEntity(dest);
 
         if (clientEntity.Valid)
         {
-            ApplySpriteData(GetEntity(dest), sprite.BaseRSI!.Path.ToString(), layerStructs, sprite.SnapCardinals, sprite.Visible, sprite.DrawDepth);
+            ApplySpriteData(GetEntity(dest), sprite.BaseRSI!.Path.ToString(), layerStructs, sprite.SnapCardinals, sprite.NoRotation, sprite.Visible, sprite.DrawDepth);
         }
     }
 
-    public void ApplySpriteData(EntityUid uid, string? rsiPath, List<SpriteSaverEvent.LayersStruct>? layers, bool snapCardinals, bool visible, int drawDepth)
+    public void ApplySpriteData(EntityUid uid, string? rsiPath, List<SpriteSaverEvent.LayersStruct>? layers, bool snapCardinals, bool screenLock, bool visible, int drawDepth)
     {
         if (!uid.Valid)
         {
@@ -98,7 +98,8 @@ public sealed partial class SpriteSaverSystem : SharedSpriteSaverSystem
             if (layer.StateIdName != null) 
             {
                 Logger.Debug(layer.StateIdName);
-                int i = spriteComp.AddLayer(new RSI.StateId(layer.StateIdName));
+                Logger.Debug(layer.ActualRsiPath ?? "No actual RSI path");
+                int i = spriteComp.AddLayer(new RSI.StateId(layer.StateIdName), layer.ActualRsiPath ?? "");
                 if (spriteComp.TryGetLayer(i, out SpriteComponent.Layer? outLayer))
                 {
                     outLayer.AnimationFrame = layer.AnimationFrame;
@@ -110,6 +111,7 @@ public sealed partial class SpriteSaverSystem : SharedSpriteSaverSystem
         }
 
         spriteComp.SnapCardinals = snapCardinals;
+        spriteComp.NoRotation = screenLock;
         spriteComp.Visible = visible;
         spriteComp.DrawDepth = drawDepth;
     }

@@ -2,12 +2,16 @@ using System.Numerics;
 using Content.Shared.GameTicking;
 using Robust.Shared.Map;
 using Robust.Shared.Map.Components;
+using Robust.Shared.Prototypes;
 using Robust.Shared.Player;
 using Robust.Shared.Utility;
 using Content.Shared.Photography;
 using Robust.Shared.Containers;
 using Robust.Server.GameObjects;
 using Serilog.Configuration;
+using Content.Shared.Coordinates;
+using Robust.Shared.GameStates;
+using System.Linq;
 
 namespace Content.Server.Photography;
 public sealed partial class PhotoSystem
@@ -15,6 +19,9 @@ public sealed partial class PhotoSystem
 
     [Dependency] private readonly EntityLookupSystem _lookup = default!;
     [Dependency] private readonly TransformSystem _transformSystem = default!;
+    [Dependency] private readonly MapSystem _mapSystem = default!;
+    [Dependency] private readonly SharedPointLightSystem _pointLightSystem = default!;
+    [Dependency] private readonly OccluderSystem _occluderSystem = default!;
     [Dependency] private readonly SharedContainerSystem _containerSystem = default!;
 
     public PhotoSession EnsureSession(PhotoSessionComponent comp, ICommonSession player)
@@ -38,13 +45,43 @@ public sealed partial class PhotoSystem
         Logger.Debug(centerpos.ToString());
 
         // Since this is the first time opening this session, set up the game
-        var entities = _lookup.GetEntitiesInRange(comp.Owner, 7, LookupFlags.Uncontained);
-        /*if (TryComp(player.AttachedEntity, out EyeComponent? eyeComp)) {
-            angle = eyeComp.Rotation;
-        }
-        comp.CameraAngle = angle;*/
+        var entities = _lookup.GetEntitiesInRange(comp.Owner, 15, LookupFlags.Uncontained);
+        //TODO: Cull objects that are NOT occluding/lights outside actual viewable range
 
         RaiseNetworkEvent(new QueryPhotoRotationEvent(GetNetEntity(comp.Owner)), player.Channel);
+
+        var mapId = comp.Owner.ToCoordinates().GetMapId(EntityManager);
+
+        var photoArea = new Box2(comp.Owner.ToCoordinates().ToMapPos(EntityManager) - new Vector2(5, 5), comp.Owner.ToCoordinates().ToMapPos(EntityManager) + new Vector2(5, 5));
+
+        var intersectingGrids = _mapManager.FindGridsIntersecting(mapId, photoArea);
+        Logger.Debug("Intersecting grids:");
+        Dictionary<EntityUid, int> gridIdMap = new();
+
+        foreach (var grid in intersectingGrids)
+        {
+            var gridUid = grid.Owner;
+
+            if (!TryComp<TransformComponent>(gridUid, out TransformComponent? gridTransform))
+                continue;
+
+            var gridPosRot = _transformSystem.GetWorldPositionRotation(gridTransform!);
+
+            var fakeGrid = _mapManager.CreateGrid(PhotoMap);
+
+            foreach (var tile in _mapSystem.GetTilesIntersecting(gridUid, grid, photoArea, true))
+            {
+                _transformSystem.SetParent(fakeGrid.Owner, _mapManager.GetMapEntityId(PhotoMap));
+
+                _transformSystem.SetWorldRotationNoLerp(fakeGrid.Owner, gridPosRot.WorldRotation);
+                _transformSystem.SetWorldPosition(fakeGrid.Owner, session.Position.Offset(gridPosRot.WorldPosition - centerpos).Position);
+                Logger.Debug("gridpos: " + (gridPosRot.WorldPosition).ToString());
+                Logger.Debug((centerpos).ToString());
+
+                _mapSystem.SetTile(fakeGrid.Owner, fakeGrid, tile.GridIndices, tile.Tile);
+
+            }
+        }
 
         foreach (var ent in entities)
         {
@@ -63,8 +100,30 @@ public sealed partial class PhotoSystem
             _transformSystem.SetWorldRotation(fakeItem, _transformSystem.GetWorldRotation(ent));
 
             var spriteSaverComp = EnsureComp<SpriteSaverComponent>(fakeItem);
+
             _spriteSaverSystem.SetSourceEntity(fakeItem, ent, player);
-            _appearanceSystem.CopyData(ent, fakeItem);
+            _appearanceSystem.CopyData(ent, fakeItem); //This gotta be made to work cuz it aint
+            if (TryComp(ent, out PointLightComponent? lightComp))
+            {
+                var fakeLightComp = EnsureComp<PointLightComponent>(fakeItem);
+                _pointLightSystem.SetCastShadows(fakeItem, lightComp.CastShadows);
+                _pointLightSystem.SetColor(fakeItem, lightComp.Color);
+                _pointLightSystem.SetEnabled(fakeItem, lightComp.Enabled);
+                _pointLightSystem.SetEnergy(fakeItem, lightComp.Energy);
+                _pointLightSystem.SetRadius(fakeItem, lightComp.Radius);
+                _pointLightSystem.SetSoftness(fakeItem, lightComp.Softness);
+                _pointLightSystem.SetMaskPath(fakeItem, lightComp.MaskPath);
+                fakeLightComp.Offset = lightComp.Offset;
+                fakeLightComp.Rotation = lightComp.Rotation;
+                fakeLightComp.MaskAutoRotate = lightComp.MaskAutoRotate;
+            }
+
+            if (TryComp(ent, out OccluderComponent? occluderComp))
+            {
+                var fakeOccluderComp = EnsureComp<OccluderComponent>(fakeItem);
+                _occluderSystem.SetBoundingBox(fakeItem, fakeOccluderComp.BoundingBox);
+                _occluderSystem.SetEnabled(fakeItem, fakeOccluderComp.Enabled);
+            }
         }
 
         /*var board = EntityManager.SpawnEntity("PhotoFakeItem", session.Position.Offset(0, 0));

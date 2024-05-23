@@ -21,6 +21,7 @@ public sealed class PhotoSytem : SharedPhotoSystem
 {
     [Dependency] private readonly IPlayerManager _playerManager = default!;
     [Dependency] private readonly EyeSystem _eye = default!;
+    [Dependency] private readonly PointLightSystem _pointLightSystem = default!;
 
     private DefaultWindow? _window; // Current open tabletop window (only allow one at a time)
     private EntityUid? _photo; // The table entity of the currently open game session
