@@ -10,8 +10,13 @@ using Robust.Shared.Containers;
 using Robust.Server.GameObjects;
 using Serilog.Configuration;
 using Content.Shared.Coordinates;
+using Content.Shared.Humanoid;
+using Robust.Shared.Physics.Systems;
 using Robust.Shared.GameStates;
 using System.Linq;
+using System.Xml.Schema;
+using Robust.Shared.Physics;
+using Robust.Shared.Physics.Components;
 
 namespace Content.Server.Photography;
 public sealed partial class PhotoSystem
@@ -20,6 +25,7 @@ public sealed partial class PhotoSystem
     [Dependency] private readonly EntityLookupSystem _lookup = default!;
     [Dependency] private readonly TransformSystem _transformSystem = default!;
     [Dependency] private readonly MapSystem _mapSystem = default!;
+    [Dependency] private readonly SharedPhysicsSystem _physicsSystem = default!;
     [Dependency] private readonly SharedPointLightSystem _pointLightSystem = default!;
     [Dependency] private readonly OccluderSystem _occluderSystem = default!;
     [Dependency] private readonly SharedContainerSystem _containerSystem = default!;
@@ -38,15 +44,11 @@ public sealed partial class PhotoSystem
         var session = new PhotoSession(PhotoMap, GetNextTabletopPosition());
         comp.Session = session;
 
-        var angle = new Angle();
-        var centerpos = Vector2.Zero;
-
-        centerpos = _transformSystem.GetWorldPosition(comp.Owner);
-        Logger.Debug(centerpos.ToString());
+        Dictionary<EntityUid, MapGridComponent> gridDictionary = new();
+        var centerpos = _transformSystem.GetWorldPosition(comp.Owner);
 
         // Since this is the first time opening this session, set up the game
-        var entities = _lookup.GetEntitiesInRange(comp.Owner, 15, LookupFlags.Uncontained);
-        //TODO: Cull objects that are NOT occluding/lights outside actual viewable range
+        var entities = GetPhotoEntitiesInRange(comp.Owner, 8, 15, LookupFlags.Uncontained);
 
         RaiseNetworkEvent(new QueryPhotoRotationEvent(GetNetEntity(comp.Owner)), player.Channel);
 
@@ -55,8 +57,6 @@ public sealed partial class PhotoSystem
         var photoArea = new Box2(comp.Owner.ToCoordinates().ToMapPos(EntityManager) - new Vector2(5, 5), comp.Owner.ToCoordinates().ToMapPos(EntityManager) + new Vector2(5, 5));
 
         var intersectingGrids = _mapManager.FindGridsIntersecting(mapId, photoArea);
-        Logger.Debug("Intersecting grids:");
-        Dictionary<EntityUid, int> gridIdMap = new();
 
         foreach (var grid in intersectingGrids)
         {
@@ -67,30 +67,21 @@ public sealed partial class PhotoSystem
 
             var gridPosRot = _transformSystem.GetWorldPositionRotation(gridTransform!);
 
-            var fakeGrid = _mapManager.CreateGrid(PhotoMap);
+            var fakeGrid = _mapManager.CreateGridEntity(PhotoMap);
+            var fakexform = EnsureComp<TransformComponent>(fakeGrid.Owner);
+            _physicsSystem.SetCanCollide(fakeGrid.Owner, false, true, true);
+            if (HasComp<PhysicsComponent>(fakeGrid.Owner))
+                _physicsSystem.SetBodyType(fakeGrid.Owner, BodyType.Static);
 
-            foreach (var tile in _mapSystem.GetTilesIntersecting(gridUid, grid, photoArea, true))
-            {
-                _transformSystem.SetParent(fakeGrid.Owner, _mapManager.GetMapEntityId(PhotoMap));
 
-                _transformSystem.SetWorldRotationNoLerp(fakeGrid.Owner, gridPosRot.WorldRotation);
-                _transformSystem.SetWorldPosition(fakeGrid.Owner, session.Position.Offset(gridPosRot.WorldPosition - centerpos).Position);
-                Logger.Debug("gridpos: " + (gridPosRot.WorldPosition).ToString());
-                Logger.Debug((centerpos).ToString());
+            gridDictionary.Add(gridUid, fakeGrid.Comp);
 
-                _mapSystem.SetTile(fakeGrid.Owner, fakeGrid, tile.GridIndices, tile.Tile);
-
-            }
+            AddTilesFromGrid(fakeGrid, gridUid, grid, photoArea, gridPosRot.WorldRotation, session.Position.Offset(gridPosRot.WorldPosition - centerpos).Position);
         }
 
         foreach (var ent in entities)
         {
-            //if (_containerSystem.IsEntityOrParentInContainer(ent))
-            //    break;
-
             var pos = _transformSystem.GetWorldPosition(ent) - centerpos;
-
-            //Vector2.Transform(point - origin, Matrix.CreateRotationZ(rotation)) + origin;
 
             var fakeItem = EntityManager.SpawnEntity("PhotoFakeItem", session.Position.Offset(pos));
             session.Entities.Add(fakeItem);
@@ -121,20 +112,39 @@ public sealed partial class PhotoSystem
             if (TryComp(ent, out OccluderComponent? occluderComp))
             {
                 var fakeOccluderComp = EnsureComp<OccluderComponent>(fakeItem);
-                _occluderSystem.SetBoundingBox(fakeItem, fakeOccluderComp.BoundingBox);
-                _occluderSystem.SetEnabled(fakeItem, fakeOccluderComp.Enabled);
+                _occluderSystem.SetBoundingBox(fakeItem, occluderComp.BoundingBox);
+                _occluderSystem.SetEnabled(fakeItem, occluderComp.Enabled);
+                
+                if (TryComp(ent, out TransformComponent? xform) && xform != null && xform.GridUid != null && xform.Anchored && gridDictionary.ContainsKey(xform.GridUid.Value))
+                {
+                    EnsureComp(ent, out CollideOnAnchorComponent fakeCollideComp);
+                    fakeCollideComp.Enable = false;
+                    _transformSystem.AnchorEntity(fakeItem, EnsureComp<TransformComponent>(fakeItem), gridDictionary[xform.GridUid.Value]);
+                }
             }
         }
-
-        /*var board = EntityManager.SpawnEntity("PhotoFakeItem", session.Position.Offset(0, 0));
-        session.Entities.Add(board);
-        var spriteSaverComp = EnsureComp<SpriteSaverComponent>(board);
-        _spriteSaverSystem.SetSourceEntity(board, comp.Owner, player);
-        _appearanceSystem.CopyData(comp.Owner, board);*/
 
         Log.Info($"Created tabletop session number {comp} at position {session.Position}.");
 
         return session;
+    }
+
+    /// <summary>
+    ///     Cleans up a tabletop game session, deleting every entity in it.
+    /// </summary>
+    /// <param name="uid">The UID of the tabletop game entity.</param>
+    public void AddTilesFromGrid(Entity<MapGridComponent> targetGrid, EntityUid sourceGridUid, MapGridComponent sourceGridComponent, Box2 area, Angle rot, Vector2 pos)
+    {
+        foreach (var tile in _mapSystem.GetTilesIntersecting(sourceGridUid, sourceGridComponent, area, true))
+        {
+            _transformSystem.SetParent(targetGrid, _mapManager.GetMapEntityId(PhotoMap));
+
+            _transformSystem.SetWorldRotationNoLerp(targetGrid.Owner, rot);
+            _transformSystem.SetWorldPosition(targetGrid, pos);
+
+            _mapSystem.SetTile(targetGrid, targetGrid, tile.GridIndices, tile.Tile);
+
+        }
     }
 
     /// <summary>
@@ -243,12 +253,33 @@ public sealed partial class PhotoSystem
 
         // Add an eye component and disable FOV
         var eyeComponent = EnsureComp<EyeComponent>(camera);
-        _eye.SetDrawFov(camera, false, eyeComponent);
+        _eye.SetDrawFov(camera, true, eyeComponent);
         _eye.SetZoom(camera, photo.CameraZoom, eyeComponent);
 
         // Add the user to the view subscribers. If there is no player session, just skip this step
         _viewSubscriberSystem.AddViewSubscriber(camera, player);
 
         return camera;
+    }
+
+    public HashSet<EntityUid> GetPhotoEntitiesInRange(EntityUid uid, float visibleObjectRange, float lightObjectRange, LookupFlags flags = EntityLookupSystem.DefaultFlags)
+    {
+        var mapPos = _transformSystem.GetMapCoordinates(uid);
+
+        if (mapPos.MapId == MapId.Nullspace)
+            return [];
+
+        var intersecting = _lookup.GetEntitiesInRange(mapPos, lightObjectRange, flags);
+        foreach(var ent in intersecting)
+        {
+            var distance = _transformSystem.GetWorldPosition(uid) - _transformSystem.GetWorldPosition(ent);
+            if (distance.Length() > visibleObjectRange)
+            {
+                if (!HasComp<OccluderComponent>(ent) && !HasComp<PointLightComponent>(ent))
+                    intersecting.Remove(ent);
+            }
+        }
+        intersecting.Remove(uid);
+        return intersecting;
     }
 }

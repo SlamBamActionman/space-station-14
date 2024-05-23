@@ -13,6 +13,8 @@
   name: fake item
   id: PhotoFakeItem
   description: If you read this, you're an admin!
+  components:
+  - type: Sprite
 
 - type: entity
   name: photo camera entity

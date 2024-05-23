@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Robust.Shared.GameStates;
+using System.Numerics;
 using Robust.Shared.ViewVariables;
 
 namespace Content.Shared.Photography;
@@ -29,4 +30,13 @@ public sealed partial class SpriteSaverComponent : Component
 
     [ViewVariables, AutoNetworkedField]
     public int DrawDepth;
+
+    [ViewVariables, AutoNetworkedField]
+    public Color Color;
+
+    [ViewVariables, AutoNetworkedField]
+    public double Rotation;
+
+    [ViewVariables, AutoNetworkedField]
+    public Vector2 Scale;
 }

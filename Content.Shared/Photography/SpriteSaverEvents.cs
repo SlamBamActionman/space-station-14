@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Numerics;
 using Robust.Shared.Serialization;
 
 namespace Content.Shared.Photography;
@@ -12,7 +13,7 @@ public sealed class SpriteSaverEvent : EntityEventArgs
 {
     public NetEntity Destination;
 
-    public string RsiPath;
+    public string? RsiPath;
 
     public List<LayersStruct> Layers;
 
@@ -24,7 +25,13 @@ public sealed class SpriteSaverEvent : EntityEventArgs
 
     public int DrawDepth;
 
-    public SpriteSaverEvent(NetEntity destination, string rsiPath, List<LayersStruct> layers, bool snapCardinals, bool screenLock, bool visible, int drawDepth)
+    public Color Color;
+
+    public double Rotation;
+
+    public Vector2 Scale;
+
+    public SpriteSaverEvent(NetEntity destination, string? rsiPath, List<LayersStruct> layers, bool snapCardinals, bool screenLock, bool visible, int drawDepth, Color color, double rotation, Vector2 scale)
     {
         Destination = destination;
         RsiPath = rsiPath;
@@ -33,6 +40,9 @@ public sealed class SpriteSaverEvent : EntityEventArgs
         ScreenLock = screenLock;
         Visible = visible;
         DrawDepth = drawDepth;
+        Color = color;
+        Rotation = rotation;
+        Scale = scale;
     }
 
     [Serializable]
@@ -43,14 +53,18 @@ public sealed class SpriteSaverEvent : EntityEventArgs
         public string? StateIdName;
         public byte DirOffset;
         public bool Visible;
+        public string? ShaderName;
+        public Color Color;
 
-        public LayersStruct(int animationFrame, string? stateIdName, string? actualRsiPath, byte dirOffset, bool visible)
+        public LayersStruct(int animationFrame, string? stateIdName, string? actualRsiPath, byte dirOffset, bool visible, string? shaderName, Color color)
         {
             AnimationFrame = animationFrame;
             StateIdName = stateIdName;
             ActualRsiPath = actualRsiPath;
             DirOffset = dirOffset;
             Visible = visible;
+            ShaderName = shaderName;
+            Color = color;
         }
     }
 

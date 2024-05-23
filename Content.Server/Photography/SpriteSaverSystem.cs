@@ -32,6 +32,9 @@ public sealed partial class SpriteSaverSystem : SharedSpriteSaverSystem
         comp.ScreenLock = ev.ScreenLock;
         comp.Visible = ev.Visible;
         comp.DrawDepth = ev.DrawDepth;
+        comp.Color = ev.Color;
+        comp.Rotation = ev.Rotation;
+        comp.Scale = ev.Scale;
 
         Dirty(comp);
     }
