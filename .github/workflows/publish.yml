@@ -49,7 +49,7 @@ jobs:
         mkdir "release/${{ github.sha }}"
         mv release/*.zip "release/${{ github.sha }}"
 
-    - name: Upload files to centcomm
+    - name: Upload files to axolotl
       uses: appleboy/scp-action@master
       with:
         host: axolotl.yuniiworks.de
