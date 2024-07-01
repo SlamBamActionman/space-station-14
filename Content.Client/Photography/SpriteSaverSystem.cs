@@ -52,9 +52,13 @@ public sealed partial class SpriteSaverSystem : SharedSpriteSaverSystem
         foreach(var layer in sprite.AllLayers)
         {
             string? shaderName = null;
+            Vector2 offset = Vector2.Zero;
             if (layer is SpriteComponent.Layer spriteLayer)
+            {
                 shaderName = spriteLayer.ShaderPrototype;
-            var layerStruct = new SpriteSaverEvent.LayersStruct(layer.AnimationFrame, sprite.LayerGetState(i).Name, layer.ActualRsi?.Path.ToString() ?? null, (byte)layer.DirOffset, layer.Visible, shaderName, layer.Color);
+                offset = spriteLayer.Offset;
+            }
+            var layerStruct = new SpriteSaverEvent.LayersStruct(layer.AnimationFrame, sprite.LayerGetState(i).Name, layer.ActualRsi?.Path.ToString() ?? null, (byte)layer.DirOffset, offset, layer.Visible, shaderName, layer.Color);
             layerStructs.Add(layerStruct);
             i++;
         }
@@ -108,6 +112,7 @@ public sealed partial class SpriteSaverSystem : SharedSpriteSaverSystem
                         outLayer.AnimationFrame = layer.AnimationFrame;
                         outLayer.SetAutoAnimated(false);
                         outLayer.DirOffset = (SpriteComponent.DirectionOffset) layer.DirOffset;
+                        outLayer.Offset = layer.Offset;
                         outLayer.Visible = layer.Visible;
                         outLayer.Color = layer.Color;
                     }

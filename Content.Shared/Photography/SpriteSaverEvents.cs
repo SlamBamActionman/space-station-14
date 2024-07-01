@@ -52,16 +52,18 @@ public sealed class SpriteSaverEvent : EntityEventArgs
         public string? ActualRsiPath;
         public string? StateIdName;
         public byte DirOffset;
+        public Vector2 Offset;
         public bool Visible;
         public string? ShaderName;
         public Color Color;
 
-        public LayersStruct(int animationFrame, string? stateIdName, string? actualRsiPath, byte dirOffset, bool visible, string? shaderName, Color color)
+        public LayersStruct(int animationFrame, string? stateIdName, string? actualRsiPath, byte dirOffset, Vector2 offset, bool visible, string? shaderName, Color color)
         {
             AnimationFrame = animationFrame;
             StateIdName = stateIdName;
             ActualRsiPath = actualRsiPath;
             DirOffset = dirOffset;
+            Offset = offset;
             Visible = visible;
             ShaderName = shaderName;
             Color = color;
