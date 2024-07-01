@@ -17,16 +17,20 @@ using System.Linq;
 using System.Xml.Schema;
 using Robust.Shared.Physics;
 using Robust.Shared.Physics.Components;
+using Content.Shared.Explosion.Components;
+using Content.Server.Explosion.EntitySystems;
 
 namespace Content.Server.Photography;
 public sealed partial class PhotoSystem
 {
 
+    [Dependency] private readonly EntityManager _entityManager = default!;
     [Dependency] private readonly EntityLookupSystem _lookup = default!;
     [Dependency] private readonly TransformSystem _transformSystem = default!;
     [Dependency] private readonly MapSystem _mapSystem = default!;
     [Dependency] private readonly SharedPhysicsSystem _physicsSystem = default!;
     [Dependency] private readonly SharedPointLightSystem _pointLightSystem = default!;
+    [Dependency] private readonly ExplosionSystem _explosionSystem = default!;
     [Dependency] private readonly OccluderSystem _occluderSystem = default!;
     [Dependency] private readonly SharedContainerSystem _containerSystem = default!;
 
@@ -88,12 +92,57 @@ public sealed partial class PhotoSystem
 
             Logger.Debug(fakeItem.ToString());
 
+            //Rotation
             _transformSystem.SetWorldRotation(fakeItem, _transformSystem.GetWorldRotation(ent));
 
+            //Sprite details 
             var spriteSaverComp = EnsureComp<SpriteSaverComponent>(fakeItem);
-
             _spriteSaverSystem.SetSourceEntity(fakeItem, ent, player);
-            _appearanceSystem.CopyData(ent, fakeItem); //This gotta be made to work cuz it aint
+
+            //Appearance data
+            _appearanceSystem.CopyData(ent, fakeItem);
+
+            // Explosion visualization
+            if (TryComp(ent, out ExplosionVisualsComponent? explosionComp))
+            {
+                var fakeExplosionVisualsComp = EnsureComp<ExplosionVisualsComponent>(fakeItem);
+                fakeExplosionVisualsComp.Epicenter = session.Position.Offset(pos);
+                fakeExplosionVisualsComp.ExplosionType = explosionComp.ExplosionType;
+                fakeExplosionVisualsComp.Intensity = explosionComp.Intensity;
+                fakeExplosionVisualsComp.SpaceMatrix = explosionComp.SpaceMatrix;
+                fakeExplosionVisualsComp.SpaceMatrix.Translation = session.Position.Position - centerpos;
+                fakeExplosionVisualsComp.SpaceTiles = explosionComp.SpaceTiles;
+                fakeExplosionVisualsComp.SpaceTileSize = explosionComp.SpaceTileSize;
+                fakeExplosionVisualsComp.Animated = false;
+
+                // Any tile-based explosion visuals are converted to space explosions and matched to the correct location.
+
+                foreach (var (entity, data) in explosionComp.Tiles)
+                {
+                    var fakeItemTileExplosion = EntityManager.SpawnEntity("PhotoFakeItem", session.Position.Offset(pos));
+                    session.Entities.Add(fakeItemTileExplosion);
+                    _transformSystem.SetWorldRotation(fakeItemTileExplosion, _transformSystem.GetWorldRotation(ent));
+
+                    _appearanceSystem.CopyData(ent, fakeItemTileExplosion);
+                    var fakeTileExplosionVisualsComp = EnsureComp<ExplosionVisualsComponent>(fakeItemTileExplosion);
+                    fakeTileExplosionVisualsComp.Epicenter = session.Position.Offset(pos);
+                    fakeTileExplosionVisualsComp.ExplosionType = explosionComp.ExplosionType;
+                    fakeTileExplosionVisualsComp.Intensity = explosionComp.Intensity; // Light is already created with the first ExplosionVisualsComponent.
+                    fakeTileExplosionVisualsComp.SpaceTiles = data;
+                    fakeTileExplosionVisualsComp.Animated = false;
+
+                    if (!_entityManager.TryGetComponent(entity, out MapGridComponent? grid))
+                        continue;
+                    if (!_entityManager.TryGetComponent(entity, out TransformComponent? xform))
+                        continue;
+
+                    fakeTileExplosionVisualsComp.SpaceTileSize = grid.TileSize;
+                    fakeTileExplosionVisualsComp.SpaceMatrix = xform.WorldMatrix;
+                    fakeTileExplosionVisualsComp.SpaceMatrix.Translation += session.Position.Position - centerpos;
+                }
+            }
+
+            // Point lights
             if (TryComp(ent, out PointLightComponent? lightComp))
             {
                 var fakeLightComp = EnsureComp<PointLightComponent>(fakeItem);
@@ -109,6 +158,7 @@ public sealed partial class PhotoSystem
                 fakeLightComp.MaskAutoRotate = lightComp.MaskAutoRotate;
             }
 
+            // Occlusion
             if (TryComp(ent, out OccluderComponent? occluderComp))
             {
                 var fakeOccluderComp = EnsureComp<OccluderComponent>(fakeItem);

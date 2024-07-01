@@ -13,10 +13,8 @@ public abstract class SharedSpriteSaverSystem : EntitySystem
 
     public void SetSourceEntity(EntityUid dest, EntityUid source, ICommonSession player)
     {
-        Logger.Debug("SetSourceEntity ran");
         RaiseNetworkEvent(new SpriteSaverSourceEvent(EntityManager.GetNetEntity(source), EntityManager.GetNetEntity(dest)), player.Channel);
     }
-
 }
 
 [Serializable, NetSerializable]

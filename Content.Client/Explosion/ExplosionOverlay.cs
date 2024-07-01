@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Numerics;
 using Content.Shared.Explosion.Components;
 using JetBrains.Annotations;
@@ -109,7 +110,7 @@ public sealed class ExplosionOverlay : Overlay
                 if (!gridBounds.Contains(centre))
                     continue;
 
-                var texture = _robustRandom.Pick(frames);
+                var texture = (visuals.Animated) ? _robustRandom.Pick(frames) : frames.First();
                 drawHandle.DrawTextureRect(texture, Box2.CenteredAround(centre, new Vector2(tileSize, tileSize)), textures.FireColor);
             }
         }

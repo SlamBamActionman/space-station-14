@@ -347,7 +347,8 @@ public sealed partial class ExplosionSystem : EntitySystem
             iterationIntensity,
             spaceData?.TileLists,
             tileLists, spaceMatrix,
-            spaceData?.TileSize ?? DefaultTileSize
+            spaceData?.TileSize ?? DefaultTileSize,
+            true
             );
     }
 }

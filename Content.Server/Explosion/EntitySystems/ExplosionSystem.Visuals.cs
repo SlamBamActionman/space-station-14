@@ -30,7 +30,8 @@ public sealed partial class ExplosionSystem : EntitySystem
             component.SpaceTiles,
             tileLists,
             component.SpaceMatrix,
-            component.SpaceTileSize);
+            component.SpaceTileSize,
+            component.Animated);
     }
 
     /// <summary>
@@ -38,7 +39,7 @@ public sealed partial class ExplosionSystem : EntitySystem
     /// </summary>
     private EntityUid CreateExplosionVisualEntity(MapCoordinates epicenter, string prototype, Matrix3x2 spaceMatrix, ExplosionSpaceTileFlood? spaceData, IEnumerable<ExplosionGridTileFlood> gridData, List<float> iterationIntensity)
     {
-        var explosionEntity = Spawn(null, MapCoordinates.Nullspace);
+        var explosionEntity = Spawn(null, epicenter);
         var comp = AddComp<ExplosionVisualsComponent>(explosionEntity);
 
         foreach (var grid in gridData)

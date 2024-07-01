@@ -49,6 +49,7 @@ public sealed class ExplosionOverlaySystem : EntitySystem
         component.ExplosionType = state.ExplosionType;
         component.SpaceMatrix = state.SpaceMatrix;
         component.SpaceTileSize = state.SpaceTileSize;
+        component.Animated = state.Animated;
     }
 
     private void OnCompRemove(EntityUid uid, ExplosionVisualsComponent component, ComponentRemove args)

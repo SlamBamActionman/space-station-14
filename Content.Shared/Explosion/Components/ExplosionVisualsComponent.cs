@@ -18,6 +18,8 @@ public sealed partial class ExplosionVisualsComponent : Component
     public string ExplosionType = string.Empty;
     public Matrix3x2 SpaceMatrix;
     public ushort SpaceTileSize;
+    [ViewVariables(VVAccess.ReadWrite)]
+    public bool Animated = true;
 }
 
 [Serializable, NetSerializable]
@@ -30,6 +32,7 @@ public sealed class ExplosionVisualsState : ComponentState
     public string ExplosionType = string.Empty;
     public Matrix3x2 SpaceMatrix;
     public ushort SpaceTileSize;
+    public bool Animated;
 
     public ExplosionVisualsState(
         MapCoordinates epicenter,
@@ -38,7 +41,8 @@ public sealed class ExplosionVisualsState : ComponentState
         Dictionary<int, List<Vector2i>>? spaceTiles,
         Dictionary<NetEntity, Dictionary<int, List<Vector2i>>> tiles,
         Matrix3x2 spaceMatrix,
-        ushort spaceTileSize)
+        ushort spaceTileSize,
+        bool animated)
     {
         Epicenter = epicenter;
         SpaceTiles = spaceTiles;
@@ -47,6 +51,7 @@ public sealed class ExplosionVisualsState : ComponentState
         ExplosionType = typeID;
         SpaceMatrix = spaceMatrix;
         SpaceTileSize = spaceTileSize;
+        Animated = animated;
     }
 }
 
