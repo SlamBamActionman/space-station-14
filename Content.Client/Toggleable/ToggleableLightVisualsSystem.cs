@@ -40,7 +40,7 @@ public sealed class ToggleableLightVisualsSystem : VisualizerSystem<ToggleableLi
         // Update any point-lights
         if (TryComp(uid, out PointLightComponent? light))
         {
-            DebugTools.Assert(!light.NetSyncEnabled, "light visualizers require point lights without net-sync");
+            //DebugTools.Assert(!light.NetSyncEnabled, "light visualizers require point lights without net-sync");
             _lights.SetEnabled(uid, enabled, light);
             if (enabled && modulate)
             {

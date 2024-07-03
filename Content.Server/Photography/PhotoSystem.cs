@@ -21,6 +21,7 @@ using Robust.Shared.Prototypes;
 using Content.Shared.Item;
 using Robust.Shared.Utility;
 using Robust.Shared.Enums;
+using Robust.Shared.GameStates;
 
 namespace Content.Server.Photography;
 
@@ -47,9 +48,16 @@ public sealed partial class PhotoSystem : SharedPhotoSystem
         SubscribeLocalEvent<PhotoSessionComponent, ComponentShutdown>(OnSessionShutdown);
         SubscribeLocalEvent<PhotoViewerComponent, ComponentShutdown>(OnViewerShutdown);
         SubscribeLocalEvent<PhotoSessionComponent, GetVerbsEvent<ActivationVerb>>(AddPlayGameVerb);
+        SubscribeLocalEvent<AppearanceCopyComponent, ComponentGetState>(OnGetState);
 
         InitializeMap();
     }
+
+    public void OnGetState(EntityUid uid, AppearanceCopyComponent component, ref ComponentGetState args)
+    {
+        args.State = new AppearanceCopyComponentState(component.PrototypeId);
+    }
+
     public void InitializePhoto(EntityUid initializer, PhotoSessionComponent comp)
     {
         if (!EntityManager.TryGetComponent(initializer, out ActorComponent? actor))

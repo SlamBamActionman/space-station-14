@@ -95,12 +95,27 @@ public sealed partial class PhotoSystem
             //Rotation
             _transformSystem.SetWorldRotation(fakeItem, _transformSystem.GetWorldRotation(ent));
 
-            //Sprite details 
-            var spriteSaverComp = EnsureComp<SpriteSaverComponent>(fakeItem);
-            _spriteSaverSystem.SetSourceEntity(fakeItem, ent, player);
-
             //Appearance data
             _appearanceSystem.CopyData(ent, fakeItem);
+
+            //Sprite details 
+            /*var spriteSaverComp = EnsureComp<SpriteSaverComponent>(fakeItem);
+            _spriteSaverSystem.SetSourceEntity(fakeItem, ent, player);*/
+            var appearanceCopyComp = EnsureComp<AppearanceCopyComponent>(fakeItem);
+            if (TryComp(ent, out MetaDataComponent? metaComp))
+            {
+                Logger.Debug(metaComp.EntityName);
+                if (metaComp.EntityPrototype != null)
+                {
+                    Logger.Debug(metaComp.EntityPrototype.ID);
+                    appearanceCopyComp.PrototypeId = metaComp.EntityPrototype.ID;
+                    Dirty(appearanceCopyComp);
+                    //_appearanceSystem.SetData(fakeItem, AppearanceCopyVisuals.Prototype, metaComp.EntityPrototype.ID);
+                }
+            }
+
+            //_appearanceSystem.SetData(fakeItem, AppearanceCopyVisuals.Prototype, EntityManager.)
+
 
             // Explosion visualization
             if (TryComp(ent, out ExplosionVisualsComponent? explosionComp))
@@ -131,13 +146,13 @@ public sealed partial class PhotoSystem
                     fakeTileExplosionVisualsComp.SpaceTiles = data;
                     fakeTileExplosionVisualsComp.Animated = false;
 
-                    if (!_entityManager.TryGetComponent(entity, out MapGridComponent? grid))
+                    if (!_entityManager.TryGetComponent(entity, out MapGridComponent? explosionGrid))
                         continue;
-                    if (!_entityManager.TryGetComponent(entity, out TransformComponent? xform))
+                    if (!_entityManager.TryGetComponent(entity, out TransformComponent? explosionXform))
                         continue;
 
-                    fakeTileExplosionVisualsComp.SpaceTileSize = grid.TileSize;
-                    fakeTileExplosionVisualsComp.SpaceMatrix = xform.WorldMatrix;
+                    fakeTileExplosionVisualsComp.SpaceTileSize = explosionGrid.TileSize;
+                    fakeTileExplosionVisualsComp.SpaceMatrix = explosionXform.WorldMatrix;
                     fakeTileExplosionVisualsComp.SpaceMatrix.Translation += session.Position.Position - centerpos;
                 }
             }
@@ -153,6 +168,7 @@ public sealed partial class PhotoSystem
                 _pointLightSystem.SetRadius(fakeItem, lightComp.Radius);
                 _pointLightSystem.SetSoftness(fakeItem, lightComp.Softness);
                 _pointLightSystem.SetMaskPath(fakeItem, lightComp.MaskPath);
+                //fakeLightComp.NetSyncEnabled = lightComp.NetSyncEnabled;
                 fakeLightComp.Offset = lightComp.Offset;
                 fakeLightComp.Rotation = lightComp.Rotation;
                 fakeLightComp.MaskAutoRotate = lightComp.MaskAutoRotate;
@@ -164,13 +180,14 @@ public sealed partial class PhotoSystem
                 var fakeOccluderComp = EnsureComp<OccluderComponent>(fakeItem);
                 _occluderSystem.SetBoundingBox(fakeItem, occluderComp.BoundingBox);
                 _occluderSystem.SetEnabled(fakeItem, occluderComp.Enabled);
-                
-                if (TryComp(ent, out TransformComponent? xform) && xform != null && xform.GridUid != null && xform.Anchored && gridDictionary.ContainsKey(xform.GridUid.Value))
-                {
-                    EnsureComp(ent, out CollideOnAnchorComponent fakeCollideComp);
-                    fakeCollideComp.Enable = false;
-                    _transformSystem.AnchorEntity(fakeItem, EnsureComp<TransformComponent>(fakeItem), gridDictionary[xform.GridUid.Value]);
-                }
+            }
+
+            // Anchoring
+            if (TryComp(ent, out TransformComponent? xform) && xform != null && xform.GridUid != null && xform.Anchored && gridDictionary.ContainsKey(xform.GridUid.Value))
+            {
+                EnsureComp(ent, out CollideOnAnchorComponent fakeCollideComp);
+                fakeCollideComp.Enable = false;
+                _transformSystem.AnchorEntity(fakeItem, EnsureComp<TransformComponent>(fakeItem), gridDictionary[xform.GridUid.Value]);
             }
         }
 
