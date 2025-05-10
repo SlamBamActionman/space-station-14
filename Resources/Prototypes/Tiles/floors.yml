@@ -2067,7 +2067,7 @@
   footstepSounds:
     collection: FootstepBlood
   itemDrop: FloorTileItemXeno
-  friction: 0.05 #slippy
+  friction: 0.25 #slippy
   heatCapacity: 10000
 
 - type: tile
@@ -2079,7 +2079,7 @@
   deconstructTools: [ Prying ]
   footstepSounds:
     collection: FootstepTile
-  itemDrop: FloorTileItemXeno
+  itemDrop: FloorTileItemXenoSteel
   heatCapacity: 10000
   allowRotationMirror: true
 
@@ -2092,7 +2092,7 @@
   deconstructTools: [ Prying ]
   footstepSounds:
     collection: FootstepTile
-  itemDrop: FloorTileItemXeno
+  itemDrop: FloorTileItemXenoSteelCorner
   heatCapacity: 10000
   allowRotationMirror: true
 
@@ -2124,5 +2124,5 @@
   deconstructTools: [ Prying ]
   footstepSounds:
     collection: FootstepHull
-  itemDrop: FloorTileItemXeno
+  itemDrop: FloorTileItemXenoMaint
   heatCapacity: 10000
