@@ -250,7 +250,7 @@ internal sealed partial class ChatManager : IChatManager
             SendChannelMessage(wrapped, logMessage);
         }
     }
-    
+
     #endregion
 
     #region Utility
@@ -259,6 +259,38 @@ internal sealed partial class ChatManager : IChatManager
         uint messageId,
         FormattedMessage message,
         CommunicationChannelPrototype channel,
+        IEnumerable<INetChannel> clients,
+        EntityUid? source,
+        bool hideChat,
+        bool recordReplay,
+        NetUserId? author = null
+    )
+    {
+        var user = author == null ? null : EnsurePlayer(author);
+        var netSource = _entityManager.GetNetEntity(source ?? default);
+        user?.AddEntity(netSource);
+
+        if (string.IsNullOrEmpty(message.ToMarkup()))
+            return;
+
+        var msg = new ChatMessage(messageId, channel, message, netSource, user?.Key, hideChat);
+        _netManager.ServerSendToMany(new MsgChatMessage() { Message = msg }, clients.ToList());
+
+        if (!recordReplay)
+            return;
+
+        if ((channel.ChatFilter & ChatChannelFilter.AdminRelated) == 0 ||
+            _configurationManager.GetCVar(CCVars.ReplayRecordAdminChat))
+        {
+            _replay.RecordServerMessage(msg);
+        }
+    }
+
+    // CHAT2-TODO: Figure out what to do with this...
+    public void ChatFormattedMessageToHashsetTemp(
+        uint messageId,
+        FormattedMessage message,
+        ChatMessageWrapperTemp channel,
         IEnumerable<INetChannel> clients,
         EntityUid? source,
         bool hideChat,

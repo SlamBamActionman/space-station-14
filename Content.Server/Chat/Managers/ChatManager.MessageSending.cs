@@ -1,6 +1,7 @@
 using System.Linq;
 using Content.Server.Chat.Systems;
 using Content.Shared.Chat;
+using Content.Shared.Chat.ChatChannels;
 using Content.Shared.Chat.Prototypes;
 using Content.Shared.Players.RateLimiting;
 using Robust.Shared.Player;
@@ -11,6 +12,9 @@ namespace Content.Server.Chat.Managers;
 
 internal sealed partial class ChatManager
 {
+    private Dictionary<Enum, OutOfSimChannelBase> _chatChannels = new()
+        { { OutOfSimChannels.OOC, new OOCOutOfSimChannel() } };
+
     /// <summary>
     /// Processes a message with formatting, markup and makes sure it gets sent out to the appropriate sessions/entities as designated by the chosen communication channel.
     /// </summary>
@@ -259,4 +263,53 @@ internal sealed partial class ChatManager
         messageContext[DefaultChannelParameters.RandomSeed] = message.GetHashCode();
         return messageContext;
     }
+
+    public void SendChannelMessageTEMP(ChatMessageWrapperTemp message, bool logMessage = true)
+    {
+        // This function should primarily be interfaced via a ChatManager.API class.
+        // That class handles the most common usecases, but this function should still be exposed so that more granular control can be given when necessary.
+
+        var senderSession = message.SenderSession;
+        var targetSessions = message.TargetSessions;
+        var chatChannel = _chatChannels[message.Channel];
+
+        // Check for rate limiting!
+        if (senderSession != null && HandleRateLimit(senderSession) != RateLimitStatus.Allowed)
+            return;
+
+        // CHAT2-TODO: We should sanitize the message here
+        // CHAT2-TODO: Probably a good place to check for bad language here - might need to be channel-dependent.
+
+        // CHAT2-TODO: The chat channel needs to be passed into this function somehow. Enum could work, and then we set the channel at the start of the function.
+        if (!chatChannel.EvaluatePublisher(senderSession))
+            return;
+
+        var commonSessions = targetSessions ?? _playerManager.NetworkedSessions.ToHashSet();
+
+        // The channel returns which consumers should get a message, and which message they should get.
+        var consumerGroups = chatChannel.CreateConsumerGroups(commonSessions, message.MessageContent);
+
+        foreach (var consumerGroup in consumerGroups)
+        {
+            // Off the message goes!
+            ChatFormattedMessageToHashset(
+                message.MessageId,
+                consumerGroup.Value,
+                new CommunicationChannelPrototype(), //What use does this one have for the client?
+                consumerGroup.Key.Select(x => x.Channel),
+                EntityUid.Invalid, // What purpose does this serve? Do we really want to pass along the source to clients? Might be a cheater concern.
+                false, //hide chat?
+                true //CHAT2-TODO: Process properly
+            );
+        }
+
+    }
+}
+
+public enum OutOfSimChannels
+{
+    OOC,
+    AdminChat,
+    GameMessage,
+    InGame,
 }
