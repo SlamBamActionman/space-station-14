@@ -528,7 +528,7 @@ public sealed class GhostRoleSystem : EntitySystem
     public int GetGhostRoleCount()
     {
         var metaQuery = GetEntityQuery<MetaDataComponent>();
-        return _ghostRoles.Count(pair => metaQuery.GetComponent(pair.Value.Owner).EntityPaused == false);
+        return _ghostRoles.Count(pair => metaQuery.GetComponent(pair.Value.Owner).EntityPaused == false && CheckGhostRoleAvailability(pair.Value));
     }
 
     /// <summary>
@@ -547,6 +547,8 @@ public sealed class GhostRoleSystem : EntitySystem
             if (metaQuery.GetComponent(uid).EntityPaused)
                 continue;
 
+            if (!CheckGhostRoleAvailability((uid, role)))
+                continue;
 
             var kind = GhostRoleKind.FirstComeFirstServe;
             GhostRoleRaffleComponent? raffle = null;
@@ -699,7 +701,8 @@ public sealed class GhostRoleSystem : EntitySystem
 
         GhostRoleInternalCreateMindAndTransfer(args.Player, uid, mob, ghostRole);
 
-        if (++component.CurrentTakeovers < component.AvailableTakeovers)
+        component.CurrentTakeovers++;
+        if (component.CurrentTakeovers < component.AvailableTakeovers)
         {
             args.TookRole = true;
             return;
@@ -717,7 +720,8 @@ public sealed class GhostRoleSystem : EntitySystem
     {
         return Resolve(uid, ref component, false) &&
                !component.Taken &&
-               !MetaData(uid).EntityPaused;
+               !MetaData(uid).EntityPaused &&
+               CheckGhostRoleAvailability((uid, component));
     }
 
     private void OnTakeoverTakeRole(EntityUid uid, GhostTakeoverAvailableComponent component, ref TakeGhostRoleEvent args)
@@ -818,6 +822,17 @@ public sealed class GhostRoleSystem : EntitySystem
         }
 
         SetMode(entity.Owner, ghostRoleProto, ghostRoleProto.Name, entity.Comp);
+    }
+
+    private bool CheckGhostRoleAvailability(Entity<GhostRoleComponent> entity)
+    {
+        if (TryComp<GhostRoleMobSpawnerComponent>(entity, out var mobSpawner))
+        {
+            if (mobSpawner.CurrentTakeovers >= mobSpawner.AvailableTakeovers)
+                return false;
+        }
+
+        return true;
     }
 }
 
