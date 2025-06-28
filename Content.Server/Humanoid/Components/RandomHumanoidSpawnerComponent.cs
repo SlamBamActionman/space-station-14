@@ -13,4 +13,11 @@ public sealed partial class RandomHumanoidSpawnerComponent : Component
 {
     [DataField("settings", customTypeSerializer: typeof(PrototypeIdSerializer<RandomHumanoidSettingsPrototype>))]
     public string? SettingsPrototypeId;
+
+    /// <summary>
+    /// If true, the spawner doesn't spawn the humanoid until it itself is selected as a ghost role.
+    /// It then transfers over the ghost role to the humanoid.
+    /// </summary>
+    [DataField]
+    public bool WaitForGhostRole = false;
 }

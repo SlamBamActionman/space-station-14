@@ -1,0 +1,287 @@
+- type: randomHumanoidSettings
+  id: Tourist
+  components:
+  - type: GhostRole
+    name: ghost-role-information-tourist-name
+    description: ghost-role-information-tourist-description
+    rules: ghost-role-information-nonantagonist-rules
+    mindRoles:
+    - MindRoleGhostRoleNeutral
+  - type: RandomHumanoidAppearance
+    randomizeName: true
+  - type: Loadout
+    prototypes: [ TouristGear ]
+    roleLoadout: [ RoleSurvivalStandard ]
+
+- type: startingGear
+  id: TouristGear
+  equipment:
+    jumpsuit: ClothingUniformJumpsuitHawaiBlack
+    back: ClothingBackpackDuffelTouristFill 
+    shoes: ClothingShoesTourist
+    eyes: ClothingEyesGlassesCheapSunglasses
+
+- type: entity
+  parent: ClothingBackpackDuffel
+  id: ClothingBackpackDuffelTouristFill
+  suffix: Tourist, Filled
+  components:
+  - type: EntityTableContainerFill
+    containers:
+      storagebase: !type:AllSelector
+        children:
+        - !type:NestedSelector
+          tableId: TouristUniformEntityTable
+        - !type:NestedSelector
+          tableId: TouristShoesEntityTable
+        - !type:NestedSelector
+          tableId: TouristHeadEntityTable
+        - !type:NestedSelector
+          tableId: TouristExtraEntityTable
+        - id: Flash # Replace with polaroid camera eventually
+
+# Start of Tourist equipment tables
+
+- type: entityTable
+  id: TouristUniformEntityTable # Also includes some outer clothing
+  table: !type:GroupSelector
+    children:
+    - !type:GroupSelector
+      weight: 1.5
+      children:
+      - id: ClothingUniformJumpsuitHawaiRed
+      - id: ClothingUniformJumpsuitHawaiYellow
+      - id: ClothingUniformJumpsuitHawaiBlue
+    - !type:GroupSelector
+      weight: 1
+      children:
+      - !type:NestedSelector
+        tableId: FancyDressEntityTable
+      - id: ClothingUniformJumpskirtCasualBlue
+        weight: 0.25
+      - id: ClothingUniformJumpskirtCasualGreen
+        weight: 0.25
+      - id: ClothingUniformJumpskirtCasualPurple
+        weight: 0.25
+      - id: ClothingUniformJumpskirtCasualRed
+        weight: 0.25
+      - id: ClothingUniformJumpsuitFlannel
+      - id: ClothingUniformColorRainbow
+        weight: 0.5
+      - id: ClothingUniformJumpskirtColorRainbow
+        weight: 0.5
+    - !type:GroupSelector
+      weight: 0.5
+      children:
+      - id: ClothingUniformJumpsuitGenetics
+        weight: 0.5
+      - id: ClothingUniformJumpskirtGenetics
+        weight: 0.5
+      - id: ClothingUniformJumpsuitGladiator
+      - id: ClothingUniformJumpsuitMonasticRobeLight
+      - id: ClothingUniformJumpsuitNanotrasen
+      - id: ClothingUniformJumpsuitDameDane
+      - id: ClothingUniformJumpsuitDetectiveGrey
+      - id: ClothingUniformJumpsuitFamilyGuy
+      - id: ClothingOuterSuitShrineMaiden
+      - id: ClothingOuterPlagueSuit
+      - id: ClothingOuterNunRobe
+      - id: ClothingOuterSanta
+    - !type:GroupSelector
+      weight: 0.3
+      children:
+      - id: ClothingUniformJumpskirtPerformer
+      - id: ClothingUniformJumpsuitCossack
+      - id: ClothingUniformJumpskirtJanimaid
+      - id: ClothingUniformJumpsuitKimono
+      - id: ClothingUniformJumpsuitNinja
+      - id: ClothingUniformJumpsuitPirate
+      - id: ClothingUniformJumpsuitRepairmanNT
+      - id: ClothingOuterSuitWitchRobes
+      - id: ClothingOuterCoatExpensiveOpened
+      - id: ClothingOuterCoatSpaceAsshole
+
+- type: entityTable
+  id: TouristShoesEntityTable
+  table: !type:GroupSelector
+    children:
+    - !type:GroupSelector
+      weight: 1.5
+      children:
+      - !type:NestedSelector
+        tableId: ShoesColorEntityTable
+      - id: ClothingShoesBootsWinter
+    - !type:GroupSelector
+      weight: 1
+      children:
+      - id: ClothingShoesBootsWork
+      - id: ClothingShoesBootsCowboyBlack
+        weight: 0.33
+      - id: ClothingShoesBootsCowboyBrown
+        weight: 0.33
+      - id: ClothingShoesBootsCowboyWhite
+        weight: 0.33
+      - id: ClothingShoesDameDane
+      - id: ClothingUnderSocksBee
+        weight: 0.5
+      - id: ClothingUnderSocksCoder
+        weight: 0.5
+    - !type:GroupSelector
+      weight: 0.5
+      children:
+      - id: ClothingShoesCult
+      - id: ClothingShoesBootsCowboyFancy
+      - id: ClothingShoesBootsMerc
+      - id: ClothingShoesBootsPerformer
+      - id: ClothingShoesSkates
+
+- type: entityTable
+  id: ShoesColorEntityTable
+  table: !type:GroupSelector
+    children:
+    - id: ClothingShoesColorBlack
+    - id: ClothingShoesColorBrown
+    - id: ClothingShoesColorWhite
+    - id: ClothingShoesColorBlue
+    - id: ClothingShoesColorYellow
+    - id: ClothingShoesColorGreen
+    - id: ClothingShoesColorOrange
+    - id: ClothingShoesColorRed
+    - id: ClothingShoesColorPurple
+
+- type: entityTable
+  id: TouristHeadEntityTable
+  table: !type:GroupSelector
+    children:
+    - !type:GroupSelector
+      weight: 1.5
+      children:
+      - id: ClothingHeadHatFlowerWreath
+      - id: ClothingHeadHatHairflower
+      - id: ClothingHeadHatStrawHat
+      - id: ClothingHeadHatTrucker
+      - id: ClothingHeadHatXmasCrown
+      - id: ClothingHeadHatCorpsoft
+    - !type:GroupSelector
+      weight: 1
+      children:
+      - id: ClothingHeadHatPartyBlue
+        weight: 0.25
+      - id: ClothingHeadHatPartyRed
+        weight: 0.25
+      - id: ClothingHeadHatPartyGreen
+        weight: 0.25
+      - id: ClothingHeadHatPartyYellow
+        weight: 0.25
+      - id: ClothingHeadHatBeaverHat
+      - id: ClothingHeadHatCowboyBlack
+        weight: 0.17
+      - id: ClothingHeadHatCowboyBrown
+        weight: 0.17
+      - id: ClothingHeadHatCowboyWhite
+        weight: 0.17
+      - id: ClothingHeadHatCowboyGrey
+        weight: 0.17
+      - id: ClothingHeadHatCowboyRed
+        weight: 0.17
+      - id: ClothingHeadHatCowboyBountyHunter
+        weight: 0.17
+      - id: ClothingHeadHatBunny
+      - id: ClothingHeadHatCasa
+      - id: ClothingHeadHatGladiator
+      - id: ClothingHeadHatMagician
+      - id: ClothingHeadHatPlaguedoctor
+      - id: ClothingHeadHatPropellerHat
+      - id: ClothingHeadRastaHat
+      - id: ClothingHeadHatShrineMaidenWig
+      - id: ClothingHeadHatSombrero
+      - id: ClothingHeadHatWatermelon
+      - id: ClothingHeadPaperSackSmile
+      - id: ClothingHeadHatHoodNunHood
+      - id: ClothingHeadHatSantahat
+      - id: ClothingHeadHatCake
+    - !type:GroupSelector
+      weight: 0.5
+      children:
+      - id: ClothingHeadHatWitch1
+      - id: ClothingHeadHatPirate
+      - id: ClothingHeadHatHetmanHat
+      - id: ClothingHeadHatTacticalMaidHeadband
+      - id: ClothingHeadHatWelding
+      - id: ClothingHeadPerformerWig
+
+- type: entityTable
+  id: TouristExtraEntityTable
+  table: !type:GroupSelector
+    children:
+    - !type:NestedSelector
+      tableId: PinEntityTable
+    - id: ClothingNeckBling
+    - id: ClothingHeadHatFlowerWreath
+      weight: 1.5
+    - id: ClothingNeckStoleChaplain
+    - id: ClothingMaskPlague
+    - id: ClothingNeckTieRed
+    - id: ToyHammer
+    - id: CigPackBlue
+    - id: ClothingNeckTieRed
+    - id: ClothingNeckScarfStripedRainbow
+    - id: ClothingNeckScarfStripedLesbianLong
+    - id: ClothingNeckHeadphones
+    - id: ClothingMaskNeckGaiter
+    - id: ClothingNeckCloakMoth
+    - id: ClothingNeckCloakNanotrasen
+      weight: 0.5
+
+- type: entityTable
+  id: PinEntityTable
+  table: !type:GroupSelector
+    children:
+    - id: ClothingNeckLGBTPin
+    - id: ClothingNeckAllyPin
+    - id: ClothingNeckAromanticPin
+    - id: ClothingNeckAsexualPin
+    - id: ClothingNeckAroacePin
+    - id: ClothingNeckBisexualPin
+    - id: ClothingNeckGayPin
+    - id: ClothingNeckIntersexPin
+    - id: ClothingNeckLesbianPin
+    - id: ClothingNeckNonBinaryPin
+    - id: ClothingNeckPansexualPin
+    - id: ClothingNeckPluralPin
+    - id: ClothingNeckOmnisexualPin
+    - id: ClothingNeckGenderqueerPin
+    - id: ClothingNeckGenderfluidPin
+    - id: ClothingNeckTransPin
+    - id: ClothingNeckAutismPin
+    - id: ClothingNeckGoldAutismPin
+
+- type: entityTable
+  id: FancyDressEntityTable
+  table: !type:GroupSelector
+    children:
+    - !type:GroupSelector
+      children:
+      - id: ClothingUniformJumpskirtBlackElegantDress
+      - id: ClothingUniformJumpskirtBlueElegantDress
+      - id: ClothingUniformJumpskirtRedElegantDress
+      - id: ClothingUniformJumpskirtPurpleElegantDress
+      - id: ClothingUniformJumpskirtGreenElegantDress
+    - !type:GroupSelector
+      children:
+      - id: ClothingUniformJumpskirtYellowTurtleneckDress
+      - id: ClothingUniformJumpskirtBlueTurtleneckDress
+      - id: ClothingUniformJumpskirtRedTurtleneckDress
+      - id: ClothingUniformJumpskirtPurpleTurtleneckDress
+      - id: ClothingUniformJumpskirtGreenTurtleneckDress
+    - !type:GroupSelector
+      children:
+      - id: ClothingUniformJumpskirtOrangeStripedDress
+      - id: ClothingUniformJumpskirtCyanStripedDress
+      - id: ClothingUniformJumpskirtRedStripedDress
+      - id: ClothingUniformJumpskirtPinkStripedDress
+      - id: ClothingUniformJumpskirtGreenStripedDress
+    - id: ClothingUniformJumpskirtYellowOldDress
+      weight: 0.3
+
+# End of Tourist equipment tables

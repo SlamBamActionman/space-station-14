@@ -323,3 +323,6 @@ ghost-role-information-wizard-desc = YER A WIZARD! Show the station what your ma
 
 ghost-role-information-emotional-support-scurret-name = Emotional Support Scurret
 ghost-role-information-emotional-support-scurret-description = Support the crew, be adorable, say "wa" a lot.
+
+ghost-role-information-tourist-name = Tourist
+ghost-role-information-tourist-description = You're on vacation! With the help of NanoTrasen's Vacation Package, you're on your way to one of their lovely space stations.

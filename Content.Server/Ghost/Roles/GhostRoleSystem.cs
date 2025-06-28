@@ -5,6 +5,8 @@ using Content.Server.Ghost.Roles.Components;
 using Content.Server.Ghost.Roles.Events;
 using Content.Shared.Ghost.Roles.Raffles;
 using Content.Server.Ghost.Roles.UI;
+using Content.Server.Humanoid.Components;
+using Content.Server.Humanoid.Systems;
 using Content.Server.Mind.Commands;
 using Content.Shared.Administration;
 using Content.Shared.CCVar;
@@ -51,6 +53,7 @@ public sealed class GhostRoleSystem : EntitySystem
     [Dependency] private readonly IGameTiming _timing = default!;
     [Dependency] private readonly PopupSystem _popupSystem = default!;
     [Dependency] private readonly IPrototypeManager _prototype = default!;
+    [Dependency] private readonly RandomHumanoidSystem _randomHumanoid = default!;
 
     private uint _nextRoleIdentifier;
     private bool _needsUpdateGhostRoleCount = true;
@@ -88,6 +91,9 @@ public sealed class GhostRoleSystem : EntitySystem
         SubscribeLocalEvent<GhostRoleMobSpawnerComponent, TakeGhostRoleEvent>(OnSpawnerTakeRole);
         SubscribeLocalEvent<GhostRoleMobSpawnerComponent, GetVerbsEvent<Verb>>(OnVerb);
         SubscribeLocalEvent<GhostRoleMobSpawnerComponent, GhostRoleRadioMessage>(OnGhostRoleRadioMessage);
+
+        SubscribeLocalEvent<RandomHumanoidSpawnerComponent, TakeGhostRoleEvent>(OnTakeoverTakeRole);
+
         _playerManager.PlayerStatusChanged += PlayerStatusChanged;
     }
 
@@ -744,6 +750,41 @@ public sealed class GhostRoleSystem : EntitySystem
 
         GhostRoleInternalCreateMindAndTransfer(args.Player, uid, uid, ghostRole);
         UnregisterGhostRole((uid, ghostRole));
+
+        args.TookRole = true;
+    }
+
+
+
+    private void OnTakeoverTakeRole(Entity<RandomHumanoidSpawnerComponent> entity, ref TakeGhostRoleEvent args)
+    {
+        if (!entity.Comp.WaitForGhostRole ||
+            !TryComp(entity, out GhostRoleComponent? ghostRole) ||
+            !CanTakeGhost(entity, ghostRole) ||
+            entity.Comp.SettingsPrototypeId == null)
+        {
+            args.TookRole = false;
+            return;
+        }
+
+        QueueDel(entity);
+        var mob = _randomHumanoid.SpawnRandomHumanoid(entity.Comp.SettingsPrototypeId, Transform(entity).Coordinates, MetaData(entity).EntityName);
+
+        ghostRole.Taken = true;
+
+        var mind = EnsureComp<MindContainerComponent>(mob);
+
+        if (mind.HasMind)
+        {
+            args.TookRole = false;
+            return;
+        }
+
+        if (ghostRole.MakeSentient)
+            MakeSentientCommand.MakeSentient(entity, EntityManager, ghostRole.AllowMovement, ghostRole.AllowSpeech);
+
+        GhostRoleInternalCreateMindAndTransfer(args.Player, entity, mob, ghostRole);
+        UnregisterGhostRole((entity, ghostRole));
 
         args.TookRole = true;
     }

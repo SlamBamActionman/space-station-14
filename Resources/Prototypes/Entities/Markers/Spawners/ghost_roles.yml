@@ -249,3 +249,26 @@
     - state: green
     - sprite: Clothing/Head/Hats/wizardhat.rsi
       state: icon
+
+- type: entity
+  id: SpawnPointGhostTourist
+  name: ghost role spawn point
+  suffix: tourist
+  parent: MarkerBase
+  components:
+  - type: GhostRole
+    name: ghost-role-information-tourist-name
+    description: ghost-role-information-tourist-description
+    rules: ghost-role-information-nonantagonist-rules
+    mindRoles:
+    - MindRoleGhostRoleNeutral
+    raffle:
+      settings: default
+  - type: RandomHumanoidSpawner
+    settings: Tourist
+    waitForGhostRole: true
+  - type: Sprite
+    sprite: Markers/jobs.rsi
+    layers:
+    - state: green
+    - state: tourist

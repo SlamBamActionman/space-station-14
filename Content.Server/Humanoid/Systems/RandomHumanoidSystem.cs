@@ -1,3 +1,6 @@
+using Content.Server.Ghost.Roles;
+using Content.Server.Ghost.Roles.Components;
+using Content.Server.Ghost.Roles.Events;
 using Content.Server.Humanoid.Components;
 using Content.Server.RandomMetadata;
 using Content.Shared.Humanoid.Prototypes;
@@ -24,13 +27,27 @@ public sealed class RandomHumanoidSystem : EntitySystem
     {
         SubscribeLocalEvent<RandomHumanoidSpawnerComponent, MapInitEvent>(OnMapInit,
             after: new []{ typeof(RandomMetadataSystem) });
+        SubscribeLocalEvent<RandomHumanoidSpawnerComponent, GhostRoleSpawnerUsedEvent>(OnGhostRoleSpawnerUsed);
     }
 
     private void OnMapInit(EntityUid uid, RandomHumanoidSpawnerComponent component, MapInitEvent args)
     {
-        QueueDel(uid);
-        if (component.SettingsPrototypeId != null)
-            SpawnRandomHumanoid(component.SettingsPrototypeId, Transform(uid).Coordinates, MetaData(uid).EntityName);
+        if (!component.WaitForGhostRole)
+        {
+            QueueDel(uid);
+            if (component.SettingsPrototypeId != null)
+                SpawnRandomHumanoid(component.SettingsPrototypeId, Transform(uid).Coordinates, MetaData(uid).EntityName);
+        }
+    }
+
+    private void OnGhostRoleSpawnerUsed(Entity<RandomHumanoidSpawnerComponent> entity, ref GhostRoleSpawnerUsedEvent args)
+    {
+        if (entity.Comp.WaitForGhostRole)
+        {
+            QueueDel(entity);
+            if (entity.Comp.SettingsPrototypeId != null)
+                args.Spawned = SpawnRandomHumanoid(entity.Comp.SettingsPrototypeId, Transform(entity).Coordinates, MetaData(entity).EntityName);
+        }
     }
 
     public EntityUid SpawnRandomHumanoid(string prototypeId, EntityCoordinates coordinates, string name)
