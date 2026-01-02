@@ -29,6 +29,7 @@ public abstract class SharedGrapplingGunSystem : EntitySystem
     [Dependency] private readonly SharedJointSystem _joints = default!;
     [Dependency] private readonly SharedGunSystem _gun = default!;
     [Dependency] private readonly SharedPhysicsSystem _physics = default!;
+    [Dependency] private readonly SharedTransformSystem _transform = default!;
 
     public const string GrapplingJoint = "grappling";
 
@@ -126,6 +127,9 @@ public abstract class SharedGrapplingGunSystem : EntitySystem
 
         if (_netManager.IsServer)
             QueueDel(projectile);
+
+        // SLAM-TODO: Gotta cover the hook being deleted other ways
+        _joints.RemoveJoint(uid, GrapplingJoint);
 
         component.Projectile = null;
         SetReeling(uid, component, false, args.User);
@@ -230,9 +234,14 @@ public abstract class SharedGrapplingGunSystem : EntitySystem
 
         var jointComp = EnsureComp<JointComponent>(uid);
         var joint = _joints.CreateDistanceJoint(uid, args.Weapon.Value, anchorA: new Vector2(0f, 0.5f), id: GrapplingJoint);
+        // SLAM-TODO: The ! below is a bit spooky. Make sure to handle it properly!
+        // Since the grappling hook is offset from the grid, we need to update the local anchor so that the relay correctly uses the correct anchor for the grid.
+        joint.LocalAnchorA = _transform.GetRelativePosition(Transform(uid), _transform.GetGrid(uid)!.Value) + Vector2.Transform(new Vector2(0f, 0.5f), Transform(uid).LocalMatrix);
+        _joints.SetRelay(uid, _transform.GetGrid(args.Embedded));
         joint.MaxLength = joint.Length + 0.2f;
         joint.Stiffness = 1f;
         joint.MinLength = 0.35f;
+
         // Setting velocity directly for mob movement fucks this so need to make them aware of it.
         // joint.Breakpoint = 4000f;
         Dirty(uid, jointComp);
