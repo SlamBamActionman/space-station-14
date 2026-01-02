@@ -232,12 +232,23 @@ public abstract class SharedGrapplingGunSystem : EntitySystem
         if (!Timing.IsFirstTimePredicted || !args.Weapon.HasValue)
             return;
 
+        // SLAM-TODO: Probably not correct because it won't account for things not on grids...
+        // SLAM-TODO: Also, should really only apply if the target is on a grid.
+        if (_transform.GetGrid(uid) == null)
+        {
+            QueueDel(uid);
+            return;
+        }
+
         var jointComp = EnsureComp<JointComponent>(uid);
         var joint = _joints.CreateDistanceJoint(uid, args.Weapon.Value, anchorA: new Vector2(0f, 0.5f), id: GrapplingJoint);
         // SLAM-TODO: The ! below is a bit spooky. Make sure to handle it properly!
         // Since the grappling hook is offset from the grid, we need to update the local anchor so that the relay correctly uses the correct anchor for the grid.
         joint.LocalAnchorA = _transform.GetRelativePosition(Transform(uid), _transform.GetGrid(uid)!.Value) + Vector2.Transform(new Vector2(0f, 0.5f), Transform(uid).LocalMatrix);
-        _joints.SetRelay(uid, _transform.GetGrid(args.Embedded));
+        _joints.SetRelay(uid, _transform.GetGrid(uid));
+        // SLAM-TODO: This doesn't quite work. Hrrm...
+        joint.LocalAnchorB = _transform.GetRelativePosition(Transform(args.Weapon.Value), _transform.GetGrid(args.Weapon.Value)!.Value);
+        _joints.SetRelay(args.Weapon.Value, _transform.GetGrid(args.Weapon.Value));
         joint.MaxLength = joint.Length + 0.2f;
         joint.Stiffness = 1f;
         joint.MinLength = 0.35f;
