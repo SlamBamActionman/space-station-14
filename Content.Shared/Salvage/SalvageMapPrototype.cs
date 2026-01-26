@@ -18,4 +18,10 @@ public sealed partial class SalvageMapPrototype : IPrototype
     /// </summary>
     [DataField(required: true)]
     public LocId SizeString;
+
+    /// <summary>
+    /// SLAM-NOTE: Display the wreck type I guess
+    /// </summary>
+    [DataField]
+    public LocId WreckTypeString = "Default";
 }
