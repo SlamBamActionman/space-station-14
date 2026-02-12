@@ -20,8 +20,14 @@ public sealed partial class SalvageMapPrototype : IPrototype
     public LocId SizeString;
 
     /// <summary>
-    /// SLAM-NOTE: Display the wreck type I guess
+    /// SLAM-NOTE: Display the wreck type I guess. This is probably an enum or something in the future.
     /// </summary>
     [DataField]
     public LocId WreckTypeString = "Default";
+
+    /// <summary>
+    /// SLAM-NOTE: Display the wreck name!
+    /// </summary>
+    [DataField]
+    public LocId WreckNameString = "Default";
 }
