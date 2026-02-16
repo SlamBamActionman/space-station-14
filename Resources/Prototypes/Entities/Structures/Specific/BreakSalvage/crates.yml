@@ -1,0 +1,104 @@
+- type: entity
+  id: BaseSalvageScrapCrate
+  parent: BaseSalvageScrapStructureDynamic
+  abstract: true
+  name: material crate
+  description: Test entity. Recyclable.
+
+- type: entity
+  id: SalvageCratePlasma
+  parent: BaseSalvageScrapCrate
+  components:
+  - type: Sprite
+    layers:
+    - state: box_plasma
+  - type: PhysicalComposition
+    materialComposition:
+      Plasma: 6000 # 60 sheets
+
+- type: entity
+  id: SalvageCratePlastic
+  parent: BaseSalvageScrapCrate
+  components:
+  - type: Sprite
+    layers:
+    - state: box_plastic
+  - type: PhysicalComposition
+    materialComposition:
+      Plastic: 6000 # 60 sheets
+
+- type: entity
+  id: SalvageCrateQuartz
+  parent: BaseSalvageScrapCrate
+  components:
+  - type: Sprite
+    layers:
+    - state: box_quartz
+  - type: PhysicalComposition
+    materialComposition:
+      Glass: 6000 # 60 sheets
+
+- type: entity
+  id: SalvageCarryCrateGlass
+  parent: BaseSalvageScrapItemLarge
+  name: material box
+  description: Test entity. Recyclable.
+  components:
+  - type: Sprite
+    layers:
+    - state: carrybox_glass
+  - type: PhysicalComposition
+    materialComposition:
+      Glass: 3000 # 30 sheets
+
+- type: entity
+  id: SalvageCarryCratePlasma
+  parent: BaseSalvageScrapItemLarge
+  name: material box
+  description: Test entity. Recyclable.
+  components:
+  - type: Sprite
+    layers:
+    - state: carrybox_plasma
+  - type: PhysicalComposition
+    materialComposition:
+      Glass: 3000 # 30 sheets
+
+- type: entity
+  id: SalvageCarryCratePlastic
+  parent: BaseSalvageScrapItemLarge
+  name: material box
+  description: Test entity. Recyclable.
+  components:
+  - type: Sprite
+    layers:
+    - state: carrybox_plastic
+  - type: PhysicalComposition
+    materialComposition:
+      Plastic: 3000 # 30 sheets
+
+- type: entity
+  id: SalvageCarryCrateSilver
+  parent: BaseSalvageScrapItemLarge
+  name: material box
+  description: Test entity. Recyclable.
+  components:
+  - type: Sprite
+    layers:
+    - state: carrybox_silver
+  - type: PhysicalComposition
+    materialComposition:
+      Silver: 3000 # 30 sheets
+
+- type: entity
+  id: SalvageCarryCrateSteel
+  parent: BaseSalvageScrapItemLarge
+  name: material box
+  description: Test entity. Recyclable.
+  components:
+  - type: Sprite
+    layers:
+    - state: carrybox_steel
+  - type: PhysicalComposition
+    materialComposition:
+      Steel: 3000 # 30 sheets

@@ -1,0 +1,30 @@
+﻿- type: constructionGraph
+  id: SalvageTank
+  start: fuelTank
+  graph:
+  - node: fuelTank
+    entity: SalvageTankFuelFrame
+    edges:
+    - to: tankFrame
+      completed:
+      - !type:SpawnPrototype
+        prototype: SalvageTankFuel
+        amount: 1
+      steps:
+      - tool: Prying
+        doAfter: 2
+  - node: cryoTank
+    entity: SalvageTankCryoFrame
+    edges:
+    - to: tankFrame
+      completed:
+      - !type:SpawnPrototype
+        prototype: SalvageTankCryo
+        amount: 1
+      steps:
+      - tool: Prying
+        doAfter: 2
+  - node: tankFrame
+    entity: SalvageTankEmptyFrame
+    actions:
+    - !type:AppearanceChange

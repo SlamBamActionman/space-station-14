@@ -1,0 +1,75 @@
+- type: entity
+  id: BaseSalvageTankFrame
+  parent: BaseSalvageScrapStructure
+  abstract: true
+
+- type: entity
+  id: SalvageTankEmptyFrame
+  parent: BaseSalvageTankFrame
+  name: tank frame
+  description: Test entity. Anchorable.
+  components:
+  - type: Sprite
+    layers:
+    - state: tank_empty
+  - type: Construction
+    graph: SalvageTank
+    node: tankFrame
+  - type: Anchorable
+    flags:
+    - Anchorable
+    - Unanchorable
+
+- type: entity
+  id: SalvageTankFuelFrame
+  parent: BaseSalvageTankFrame
+  name: ship fuel tank
+  description: Test entity. Pryable.
+  components:
+  - type: Sprite
+    layers:
+    - state: fuel_tank
+  - type: Construction
+    graph: SalvageTank
+    node: fuelTank
+
+- type: entity
+  id: SalvageTankFuel
+  parent: BaseSalvageScrapItemLarge
+  name: ship fuel tank
+  description: Test entity. Recyclable.
+  components:
+  - type: Sprite
+    layers:
+    - state: fuel_tank_out
+  - type: PhysicalComposition
+    materialComposition:
+      Steel: 3000 # 30 sheets
+      Plasma: 3000 # 30 sheets
+
+- type: entity
+  id: SalvageTankCryoFrame
+  parent: BaseSalvageTankFrame
+  name: ship cryo tank
+  description: Test entity. Pryable.
+  components:
+  - type: Sprite
+    layers:
+    - state: cryo_tank
+  - type: Construction
+    graph: SalvageTank
+    node: cryoTank
+
+- type: entity
+  id: SalvageTankCryo
+  parent: BaseSalvageScrapItemLarge
+  name: ship cryo tank
+  description: Test entity. Recyclable.
+  components:
+  - type: Sprite
+    layers:
+    - state: cryo_tank_out
+  - type: PhysicalComposition
+    materialComposition:
+      Steel: 3000 # 30 sheets
+      Silver: 3000 # 30 sheets

@@ -1,0 +1,36 @@
+- type: entity
+  id: BaseSalvageScrapStructure
+  parent: BaseStructure
+  abstract: true
+  components:
+  - type: Transform
+    noRot: true
+  - type: Sprite
+    sprite: Structures/Specific/salvage_magnet_scrap.rsi
+  - type: InteractionOutline
+
+- type: entity
+  id: BaseSalvageScrapStructureDynamic
+  parent: BaseStructureDynamic
+  abstract: true
+  components:
+  - type: Transform
+    noRot: true
+  - type: Sprite
+    sprite: Structures/Specific/salvage_magnet_scrap.rsi
+  - type: InteractionOutline
+
+- type: entity
+  id: BaseSalvageScrapItem
+  parent: BaseItem
+  abstract: true
+  components:
+  - type: Sprite
+    sprite: Structures/Specific/salvage_magnet_scrap.rsi
+
+- type: entity
+  id: BaseSalvageScrapItemLarge
+  parent: BaseSalvageScrapItem
+  abstract: true
+  components:
+  - type: MultiHandedItem

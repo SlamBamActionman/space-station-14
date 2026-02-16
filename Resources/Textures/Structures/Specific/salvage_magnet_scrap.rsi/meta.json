@@ -8,88 +8,94 @@
   },
   "states": [
     {
-      "name": "box_plasma",
+      "name": "box_plasma"
     },
     {
-      "name": "box_plastic",
+      "name": "box_plastic"
     },
     {
-      "name": "box_quartz",
+      "name": "box_quartz"
     },
     {
-      "name": "carrybox_glass",
+      "name": "carrybox_glass"
     },
     {
-      "name": "carrybox_plasma",
+      "name": "carrybox_plasma"
     },
     {
-      "name": "carrybox_plastic",
+      "name": "carrybox_plastic"
     },
     {
-      "name": "carrybox_silver",
+      "name": "carrybox_silver"
     },
     {
-      "name": "carrybox_steel",
+      "name": "carrybox_steel"
     },
     {
-      "name": "cryo_tank",
+      "name": "cryo_tank"
     },
     {
-      "name": "cryo_tank_out",
+      "name": "cryo_tank_out"
     },
     {
-      "name": "emp_barrel",
+      "name": "empbarrel"
     },
     {
-      "name": "explosiove_barrel",
+      "name": "explosivebarrel"
     },
     {
-      "name": "fuel_tank",
+      "name": "fuel_tank"
     },
     {
-      "name": "fuel_tank_out",
+      "name": "fuel_tank_out"
     },
     {
-      "name": "gold_motor",
+      "name": "gold_motor"
     },
     {
-      "name": "tank_empty",
+      "name": "tank_empty"
     },
     {
-      "name": "uranium_rod",
+      "name": "uranium_rod"
     },
     {
-      "name": "wallmount_1",
+      "name": "wallmount_1"
     },
     {
-      "name": "wallmount_2",
+      "name": "wallmount_2"
     },
     {
-      "name": "wallmount_empty",
+      "name": "wallmount_empty"
     },
     {
-      "name": "wallmount_explosive_1",
+      "name": "wallmount_explosive_1"
     },
     {
-      "name": "wallmount_explosive_2",
+      "name": "wallmount_explosive_2"
     },
     {
-      "name": "wallmount_orangepipe_1",
+      "name": "wallmount_orangepipe_1"
     },
     {
-      "name": "wallmount_orangepipe_2",
+      "name": "wallmount_orangepipe_2"
     },
     {
-      "name": "wallmount_orangepipe_3",
+      "name": "wallmount_orangepipe_3"
     },
     {
-      "name": "wallmount_silver_1",
+      "name": "wallmount_silver_1"
     },
     {
-      "name": "wallmount_silver_2",
+      "name": "wallmount_silver_2"
     },
     {
-      "name": "wallmount_silver_3",
+      "name": "wallmount_silver_3"
+    },
+    {
+      "name": "silver_pipe"
+    },
+    {
+      "name": "plasma_pipe"
     }
   ]
 }

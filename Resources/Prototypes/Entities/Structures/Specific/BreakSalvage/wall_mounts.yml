@@ -1,0 +1,164 @@
+- type: entity
+  id: BaseSalvageWallmount
+  parent: BaseWallmount
+  abstract: true
+  name: pipe panel
+  description: Test entity.
+  components:
+  - type: Sprite
+    sprite: Structures/Specific/salvage_magnet_scrap.rsi
+
+- type: entity
+  id: SalvageWallpipeEmpty
+  parent: BaseSalvageWallmount
+  components:
+  - type: Sprite
+    layers:
+    - state: wallmount_empty
+  - type: Construction
+    graph: SalvageWallpipes
+    node: wallcoverEmpty
+
+- type: entity
+  id: SalvageWallpipeCoverClosed
+  parent: BaseSalvageWallmount
+  description: Test entity. Screwable.
+  components:
+  - type: Sprite
+    layers:
+    - state: wallmount_1
+  - type: Construction
+    graph: SalvageWallpipes
+    node: closedCover
+
+- type: entity
+  id: SalvageWallpipeCoverUnscrewed
+  parent: BaseSalvageWallmount
+  description: Test entity. Pryable.
+  components:
+  - type: Sprite
+    layers:
+    - state: wallmount_2
+  - type: Construction
+    graph: SalvageWallpipes
+    node: unscrewedCover
+
+- type: entity
+  id: SalvageWallpipeSilver3
+  parent: BaseSalvageWallmount
+  description: Test entity. Wrenchable.
+  components:
+  - type: Sprite
+    layers:
+    - state: wallmount_silver_1
+  - type: Construction
+    graph: SalvageWallpipes
+    node: wallcoverSilver3
+
+- type: entity
+  id: SalvageWallpipeSilver2
+  parent: BaseSalvageWallmount
+  description: Test entity. Wrenchable.
+  components:
+  - type: Sprite
+    layers:
+    - state: wallmount_silver_2
+  - type: Construction
+    graph: SalvageWallpipes
+    node: wallcoverSilver2
+
+- type: entity
+  id: SalvageWallpipeSilver1
+  parent: BaseSalvageWallmount
+  description: Test entity. Wrenchable.
+  components:
+  - type: Sprite
+    layers:
+    - state: wallmount_silver_3
+  - type: Construction
+    graph: SalvageWallpipes
+    node: wallcoverSilver1
+
+- type: entity
+  id: SalvageWallpipeCoverClosedFuel
+  parent: BaseSalvageWallmount
+  description: Test entity. Screwable.
+  components:
+  - type: Sprite
+    layers:
+    - state: wallmount_explosive_1
+  - type: Construction
+    graph: SalvageWallpipesFuel
+    node: closedCover
+
+- type: entity
+  id: SalvageWallpipeCoverUnscrewedFuel
+  parent: BaseSalvageWallmount
+  description: Test entity. Pryable.
+  components:
+  - type: Sprite
+    layers:
+    - state: wallmount_explosive_2
+  - type: Construction
+    graph: SalvageWallpipesFuel
+    node: unscrewedCover
+
+- type: entity
+  id: SalvageWallpipeFuel3
+  parent: BaseSalvageWallmount
+  description: Test entity. Wrenchable.
+  components:
+  - type: Sprite
+    layers:
+    - state: wallmount_orangepipe_1
+  - type: Construction
+    graph: SalvageWallpipesFuel
+    node: wallcoverFuel3
+
+- type: entity
+  id: SalvageWallpipeFuel2
+  parent: BaseSalvageWallmount
+  description: Test entity. Wrenchable.
+  components:
+  - type: Sprite
+    layers:
+    - state: wallmount_orangepipe_2
+  - type: Construction
+    graph: SalvageWallpipesFuel
+    node: wallcoverFuel2
+
+- type: entity
+  id: SalvageWallpipeFuel1
+  parent: BaseSalvageWallmount
+  description: Test entity. Wrenchable.
+  components:
+  - type: Sprite
+    layers:
+    - state: wallmount_orangepipe_3
+  - type: Construction
+    graph: SalvageWallpipesFuel
+    node: wallcoverFuel1
+
+- type: entity
+  id: SalvagePlasmaPipe
+  parent: BaseSalvageScrapItem
+  description: Test entity. Recyclable.
+  components:
+  - type: Sprite
+    layers:
+    - state: plasma_pipe
+  - type: PhysicalComposition
+    materialComposition:
+      Plasma: 3000 # 30 sheets
+
+- type: entity
+  id: SalvageSilverPipe
+  parent: BaseSalvageScrapItem
+  description: Test entity. Recyclable.
+  components:
+  - type: Sprite
+    layers:
+    - state: silver_pipe
+  - type: PhysicalComposition
+    materialComposition:
+      Silver: 3000 # 30 sheets
