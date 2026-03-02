@@ -134,5 +134,58 @@ public sealed class SalvageMagnetBoundUserInterface : BoundUserInterface
 
             _window.AddOption(option);
         }
+
+        if (current.ExtraEntry != 0)
+        {
+            var seedExtra = current.ExtraEntry;
+            var offerExtra = salvageSystem.GetSalvageOfferingExtra(seedExtra);
+            var optionExtra = new OfferingWindowOption();
+            optionExtra.MinWidth = 210f;
+            optionExtra.Disabled = current.EndTime != null;
+            optionExtra.Claimed = current.ActiveSeed == seedExtra;
+
+            optionExtra.ClaimPressed += _ =>
+            {
+                SendMessage(new MagnetClaimOfferEventExtra
+                {
+                    Index = seedExtra
+                });
+            };
+
+            switch (offerExtra)
+            {
+                case SalvageOffering salvage:
+                    optionExtra.Title = Loc.GetString($"salvage-map-wreck");
+
+                    var salvContainer = new BoxContainer
+                    {
+                        Orientation = BoxContainer.LayoutOrientation.Horizontal,
+                        HorizontalExpand = true,
+                    };
+
+                    var sizeLabel = new Label
+                    {
+                        Text = Loc.GetString("salvage-map-wreck-desc-size"),
+                        HorizontalAlignment = Control.HAlignment.Left,
+                    };
+
+                    var sizeValueLabel = new RichTextLabel
+                    {
+                        HorizontalAlignment = Control.HAlignment.Right,
+                        HorizontalExpand = true,
+                    };
+                    sizeValueLabel.SetMarkup(Loc.GetString(salvage.SalvageMap.SizeString));
+
+                    salvContainer.AddChild(sizeLabel);
+                    salvContainer.AddChild(sizeValueLabel);
+
+                    optionExtra.AddContent(salvContainer);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            _window.AddOption(optionExtra);
+        }
     }
 }

@@ -1,6 +1,6 @@
-namespace Content.Server.Salvage.Magnet;
+namespace Content.Shared.Salvage.Magnet;
 
-[RegisterComponent]
+[RegisterComponent, AutoGenerateComponentState]
 public sealed partial class SalvageMagnetComponent : Component
 {
     /// <summary>
@@ -15,4 +15,10 @@ public sealed partial class SalvageMagnetComponent : Component
     /// </summary>
     [DataField]
     public float LateralOffset = 16f;
+
+    /// <summary>
+    /// SLAM-TODO: This is just a very temporary hack. 0 is no extra, 1-6 are the other ships
+    /// </summary>
+    [DataField, AutoNetworkedField]
+    public int ExtraEntry = 0;
 }

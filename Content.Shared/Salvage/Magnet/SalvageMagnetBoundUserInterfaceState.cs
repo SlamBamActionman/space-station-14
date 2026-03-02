@@ -15,6 +15,8 @@ public sealed class SalvageMagnetBoundUserInterfaceState : BoundUserInterfaceSta
 
     public List<int> Offers;
 
+    public int ExtraEntry;
+
     public SalvageMagnetBoundUserInterfaceState(List<int> offers)
     {
         Offers = offers;

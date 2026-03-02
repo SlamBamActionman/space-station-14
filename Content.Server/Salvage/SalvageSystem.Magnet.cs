@@ -252,6 +252,7 @@ public sealed partial class SalvageSystem
                 EndTime = dataComp.EndTime,
                 NextOffer = dataComp.NextOffer,
                 ActiveSeed = dataComp.ActiveSeed,
+                ExtraEntry = entity.Comp.ExtraEntry,
             });
     }
 
@@ -274,6 +275,7 @@ public sealed partial class SalvageSystem
                     EndTime = data.Comp.EndTime,
                     NextOffer = data.Comp.NextOffer,
                     ActiveSeed = data.Comp.ActiveSeed,
+                    ExtraEntry = magnet.ExtraEntry,
                 });
         }
     }
