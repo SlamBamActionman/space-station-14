@@ -43,6 +43,20 @@
     powerLoad: 2500 # TODO change this to a HV power draw that really hits the grid hard WHEN active
   - type: Machine
     board: SalvageMagnetMachineCircuitboard
+  - type: ItemSlots
+    slots:
+      manifest_holder:
+        name: manifest-holder
+        insertSuccessPopup: Magnet offerings expanded!
+        whitelist:
+          requireAll: true
+          components:
+          - SalvageOfferingProvider
+          - Item
+  - type: ContainerContainer
+    containers:
+      circuit_holder: !type:ContainerSlot
+      board: !type:Container
 
 # For Knightship
 - type: entity

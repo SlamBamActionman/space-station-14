@@ -68,6 +68,11 @@ public sealed partial class OfferingWindow : FancyWindow,
         Container.AddChild(option);
     }
 
+    public void AddPlaceholderOption(Placeholder option)
+    {
+        Container.AddChild(option);
+    }
+
     public void ClearOptions()
     {
         Container.RemoveAllChildren();

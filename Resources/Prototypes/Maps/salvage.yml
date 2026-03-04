@@ -3,19 +3,49 @@
 # "Small"-class maps - Max size square: 7x7, indicated size: 3.5
 
 - type: salvageMap
-  id: Small1
-  mapPath: /Maps/Salvage/small-1.yml
-  sizeString: salvage-map-wreck-size-small
+  id: BreakerBasic
+  mapPath: /Maps/ProtoSalv/breaker_basic.yml
+  sizeString: Small
+  wreckTypeString: None
+  wreckNameString: P-Transport "Breaker" Class
 
 - type: salvageMap
-  id: Small2
-  mapPath: /Maps/Salvage/small-2.yml
-  sizeString: salvage-map-wreck-size-small
+  id: BreakerFire
+  mapPath: /Maps/ProtoSalv/breaker_fire.yml
+  sizeString: Small
+  wreckTypeString: Fire
+  wreckNameString: P-Transport "Breaker" Class
 
 - type: salvageMap
-  id: SmallShip1
-  mapPath: /Maps/Salvage/small-ship-1.yml
-  sizeString: salvage-map-wreck-size-small
+  id: BreakerMobs
+  mapPath: /Maps/ProtoSalv/breaker_mobs.yml
+  sizeString: Small
+  wreckTypeString: Infested
+  wreckNameString: P-Transport "Breaker" Class
+
+- type: salvageMap
+  id: ChunkyMedicalShadow
+  mapPath: /Maps/ProtoSalv/breaker_basic.yml
+  sizeString: Medium
+  wreckTypeString: Obscured
+  jobConnection: MedicalDoctor
+  wreckNameString: NT-Corp "Chunky" Class
+
+- type: salvageMap
+  id: ChunkySecElectricalDefended
+  mapPath: /Maps/ProtoSalv/breaker_fire.yml
+  sizeString: Medium
+  wreckTypeString: Exposed Wires, Heavily
+  jobConnection: SecurityOfficer
+  wreckNameString: NT-Corp "Chunky" Class
+
+- type: salvageMap
+  id: ChunkyServiceOvergrownAnchored
+  mapPath: /Maps/ProtoSalv/breaker_mobs.yml
+  sizeString: Medium
+  wreckTypeString: Overgrown, Anchored
+  jobConnection: Bartender
+  wreckNameString: NT-Corp "Chunky" Class
 
 # SLAM-NOTE: Commented out a bunch of salv maps for testing purposes.
 #- type: salvageMap

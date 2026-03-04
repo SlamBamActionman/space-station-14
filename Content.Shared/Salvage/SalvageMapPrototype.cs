@@ -1,3 +1,4 @@
+using Content.Shared.Roles;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Utility;
 
@@ -30,4 +31,10 @@ public sealed partial class SalvageMapPrototype : IPrototype
     /// </summary>
     [DataField]
     public LocId WreckNameString = "Default";
+
+    /// <summary>
+    /// SLAM-NOTE: Job prototype this wreck is tied to, if any.
+    /// </summary>
+    [DataField]
+    public ProtoId<JobPrototype>? JobConnection = null;
 }

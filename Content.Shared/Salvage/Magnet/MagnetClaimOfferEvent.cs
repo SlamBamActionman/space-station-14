@@ -10,3 +10,12 @@ public sealed class MagnetClaimOfferEvent : BoundUserInterfaceMessage
 {
     public int Index;
 }
+
+/// <summary>
+/// SLAM-NOTE: Prototype code. The entire thing should be rewritten.
+/// </summary>
+[Serializable, NetSerializable]
+public sealed class MagnetClaimOfferEventExtra : BoundUserInterfaceMessage
+{
+    public int Index;
+}

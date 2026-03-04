@@ -35,6 +35,14 @@ public sealed partial class SalvageSystem
         SubscribeLocalEvent<SalvageMagnetComponent, MagnetClaimOfferEvent>(OnMagnetClaim);
         SubscribeLocalEvent<SalvageMagnetComponent, ComponentStartup>(OnMagnetStartup);
         SubscribeLocalEvent<SalvageMagnetComponent, AnchorStateChangedEvent>(OnMagnetAnchored);
+
+        SubscribeLocalEvent<SalvageMagnetComponent, ExtraEntryChangedEvent>(OnExtraEntryChanged);
+    }
+
+    private void OnExtraEntryChanged(Entity<SalvageMagnetComponent> entity, ref ExtraEntryChangedEvent args)
+    {
+        entity.Comp.ExtraEntry = args.ExtraEntry;
+        UpdateMagnetUI(entity, Transform(entity));
     }
 
     private void OnMagnetClaim(EntityUid uid, SalvageMagnetComponent component, ref MagnetClaimOfferEvent args)
