@@ -27,6 +27,7 @@
   components:
   - type: Sprite
     sprite: Structures/Specific/salvage_magnet_scrap.rsi
+  - type: SalvageMagnetValuable
 
 - type: entity
   id: BaseSalvageScrapItemLarge

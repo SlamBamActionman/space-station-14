@@ -4,6 +4,8 @@
   abstract: true
   name: material crate
   description: Test entity. Recyclable.
+  components:
+  - type: SalvageMagnetValuable
 
 - type: entity
   id: SalvageCratePlasma

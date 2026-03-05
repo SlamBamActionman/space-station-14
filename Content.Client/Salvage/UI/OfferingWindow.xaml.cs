@@ -19,7 +19,8 @@ public sealed partial class OfferingWindow : FancyWindow,
 
     public bool Claimed;
     public TimeSpan NextOffer;
-    private TimeSpan? _progression;
+
+    public TimeSpan? ClaimTime;
 
     /// <summary>
     /// Time between NextOffers
@@ -31,36 +32,14 @@ public sealed partial class OfferingWindow : FancyWindow,
     /// </summary>
     public TimeSpan ProgressionCooldown;
 
-    /// <summary>
-    /// Secondary timer used for tracking active progress.
-    /// </summary>
-    public TimeSpan? Progression
-    {
-        get => _progression;
-        set
-        {
-            if (_progression == value)
-                return;
-
-            _progression = value;
-
-            if (value == null)
-            {
-                ProgressionBox.Visible = false;
-            }
-            else
-            {
-                ProgressionBox.Visible = true;
-            }
-        }
-    }
+    public event Action<string>? OnSalvageEnd;
 
     public OfferingWindow()
     {
         RobustXamlLoader.Load(this);
         IoCManager.InjectDependencies(this);
 
-        ProgressionBar.ForegroundStyleBoxOverride = new StyleBoxFlat(Color.FromHex("#C74EBD"));
+        EndButton.OnPressed += _ => OnSalvageEnd?.Invoke("");
     }
 
     public void AddOption(OfferingWindowOption option)
@@ -78,25 +57,31 @@ public sealed partial class OfferingWindow : FancyWindow,
         Container.RemoveAllChildren();
     }
 
+    public void EnableClaimScreen(bool enable)
+    {
+        OfferingContainer.Visible = !enable;
+        WreckContainer.Visible = enable;
+    }
+
+    public void UpdateTileProgression(float percentage)
+    {
+        WreckCompletionBar.Value = percentage;
+        WreckCompletionText.Text = percentage.ToString("P2");
+    }
+
+    public void UpdateShredderEfficiency(float percentage)
+    {
+        if (percentage > 0.9f)
+            EfficiencyText.Text = "[color=#69ff63]" + percentage.ToString("P0") + "[/color]";
+        else if (percentage > 0.4f)
+            EfficiencyText.Text = "[color=#efff63]" + percentage.ToString("P0") + "[/color]";
+        else
+            EfficiencyText.Text = "[color=#ff6363]" + percentage.ToString("P0") + "[/color]";
+    }
+
     protected override void FrameUpdate(FrameEventArgs args)
     {
         base.FrameUpdate(args);
-
-        if (_progression != null)
-        {
-            var remaining = _progression.Value - _timing.CurTime;
-
-            if (remaining < TimeSpan.Zero)
-            {
-                ProgressionBar.Value = 1f;
-                ProgressionText.Text = "00:00";
-            }
-            else
-            {
-                ProgressionBar.Value = 1f - (float) (remaining / ProgressionCooldown);
-                ProgressionText.Text = $"{remaining.Minutes:00}:{remaining.Seconds:00}";
-            }
-        }
 
         if (Claimed)
         {
@@ -117,6 +102,12 @@ public sealed partial class OfferingWindow : FancyWindow,
                 NextOfferBar.Value = 1f - (float) (remaining / Cooldown);
                 NextOfferText.Text = $"{remaining.Minutes:00}:{remaining.Seconds:00}";
             }
+        }
+
+        if (ClaimTime != null)
+        {
+            var claimTime = _timing.CurTime.Subtract(ClaimTime.Value);
+            ClaimTimerText.Text = claimTime.ToString("mm\\:ss");
         }
     }
 }

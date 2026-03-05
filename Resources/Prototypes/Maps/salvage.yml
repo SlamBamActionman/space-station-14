@@ -13,37 +13,37 @@
   id: BreakerFire
   mapPath: /Maps/ProtoSalv/breaker_fire.yml
   sizeString: Small
-  wreckTypeString: Fire
+  wreckTypeString: "[color=orange]Fire[/color]"
   wreckNameString: P-Transport "Breaker" Class
 
 - type: salvageMap
   id: BreakerMobs
   mapPath: /Maps/ProtoSalv/breaker_mobs.yml
   sizeString: Small
-  wreckTypeString: Infested
+  wreckTypeString: "[color=#ff0000]Infested[/color]"
   wreckNameString: P-Transport "Breaker" Class
 
 - type: salvageMap
   id: ChunkyMedicalShadow
-  mapPath: /Maps/ProtoSalv/breaker_basic.yml
+  mapPath: /Maps/ProtoSalv/chunky_medical_shadow.yml
   sizeString: Medium
-  wreckTypeString: Obscured
+  wreckTypeString: "[color=#dea8ff]Obscured[/color]"
   jobConnection: MedicalDoctor
   wreckNameString: NT-Corp "Chunky" Class
 
 - type: salvageMap
   id: ChunkySecElectricalDefended
-  mapPath: /Maps/ProtoSalv/breaker_fire.yml
+  mapPath: /Maps/ProtoSalv/chunky_sec_electrical_defended.yml
   sizeString: Medium
-  wreckTypeString: Exposed Wires, Heavily
+  wreckTypeString: "[color=#fcff57]Exposed Wires[/color], [color=#ff0000]Defended[/color]"
   jobConnection: SecurityOfficer
   wreckNameString: NT-Corp "Chunky" Class
 
 - type: salvageMap
   id: ChunkyServiceOvergrownAnchored
-  mapPath: /Maps/ProtoSalv/breaker_mobs.yml
+  mapPath: /Maps/ProtoSalv/chunky_service_overgrown_anchored.yml
   sizeString: Medium
-  wreckTypeString: Overgrown, Anchored
+  wreckTypeString: "[color=#7aff73]Overgrown[/color], [color=#5c92ff]Anchored[/color]"
   jobConnection: Bartender
   wreckNameString: NT-Corp "Chunky" Class
 

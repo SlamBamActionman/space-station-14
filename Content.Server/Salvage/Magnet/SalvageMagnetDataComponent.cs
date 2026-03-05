@@ -17,10 +17,16 @@ public sealed partial class SalvageMagnetDataComponent : Component
     public List<EntityUid>? ActiveEntities;
 
     /// <summary>
-    /// If the magnet is currently active when does it end.
+    /// If the magnet is currently active.
+    /// </summary>
+    [DataField]
+    public bool Active;
+
+    /// <summary>
+    /// When the magnet had an offer claimed.
     /// </summary>
     [DataField(customTypeSerializer:typeof(TimeOffsetSerializer))]
-    public TimeSpan? EndTime;
+    public TimeSpan? ClaimTime;
 
     [DataField(customTypeSerializer:typeof(TimeOffsetSerializer))]
     public TimeSpan NextOffer;
@@ -48,6 +54,30 @@ public sealed partial class SalvageMagnetDataComponent : Component
 
     [DataField]
     public int ActiveSeed;
+
+    /// <summary>
+    /// The number of tiles the salvage magnet has pulled for the active seed when spawning.
+    /// </summary>
+    [DataField]
+    public int InitialTileCount;
+
+    /// <summary>
+    /// The number of tiles currently remaining for the salvage magnet.
+    /// </summary>
+    [DataField]
+    public int CurrentTileCount;
+
+    /// <summary>
+    /// The number of valuable entities that should be extracted from the salvage pull.
+    /// </summary>
+    [DataField]
+    public int InitialValuablesCount;
+
+    /// <summary>
+    /// The number of valuable entities that got incorrectly processed in the salvage pull.
+    /// </summary>
+    [DataField]
+    public int IncorrectlyProcessedValuablesCount;
 
     /// <summary>
     /// Final countdown announcement.

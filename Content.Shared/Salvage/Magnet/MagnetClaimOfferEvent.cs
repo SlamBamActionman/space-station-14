@@ -12,6 +12,16 @@ public sealed class MagnetClaimOfferEvent : BoundUserInterfaceMessage
 }
 
 /// <summary>
+/// Indicates the current magnet claim has been ended.
+/// </summary>
+[Serializable, NetSerializable]
+public sealed class MagnetClaimEndedEvent : BoundUserInterfaceMessage
+{
+
+}
+
+
+/// <summary>
 /// SLAM-NOTE: Prototype code. The entire thing should be rewritten.
 /// </summary>
 [Serializable, NetSerializable]

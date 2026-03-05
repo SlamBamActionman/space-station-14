@@ -14,16 +14,10 @@ public sealed class SalvageOfferingProviderVisualizerSystem : VisualizerSystem<S
 
     protected override void OnAppearanceChange(EntityUid uid, SalvageOfferingProviderComponent component, ref AppearanceChangeEvent args)
     {
-        Logger.Debug("1");
-
         if (args.Sprite == null)
             return;
-        Logger.Debug("2");
 
         _appearance.TryGetData(uid, SalvageOfferingProviderVisuals.JobIcon, out string job, args.Component);
-
-        Logger.Debug("Weh: " + job);
-
 
         if (string.IsNullOrEmpty(job))
             job = UnknownIcon;

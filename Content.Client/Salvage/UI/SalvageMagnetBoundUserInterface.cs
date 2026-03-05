@@ -34,6 +34,15 @@ public sealed class SalvageMagnetBoundUserInterface : BoundUserInterface
 
         _window = this.CreateWindowCenteredLeft<OfferingWindow>();
         _window.Title = Loc.GetString("salvage-magnet-window-title");
+        _window.OnSalvageEnd += SalvageEnded;
+    }
+
+    private void SalvageEnded(string reason)
+    {
+        SendMessage(new MagnetClaimEndedEvent()
+        {
+
+        });
     }
 
     protected override void UpdateState(BoundUserInterfaceState state)
@@ -47,10 +56,21 @@ public sealed class SalvageMagnetBoundUserInterface : BoundUserInterface
 
         var salvageSystem = _entManager.System<SharedSalvageSystem>();
         _window.NextOffer = current.NextOffer;
-        _window.Progression = current.EndTime ?? TimeSpan.Zero;
-        _window.Claimed = current.EndTime != null;
+        _window.ClaimTime = current.ClaimTime;
+        _window.Claimed = current.Active;
         _window.Cooldown = current.Cooldown;
         _window.ProgressionCooldown = current.Duration;
+
+        _window.EnableClaimScreen(_window.Claimed);
+
+        var completionPercentage = 0f;
+        if (current.InitialTileCount != 0)
+        {
+            completionPercentage = 1f - (float) current.CurrentTileCount / current.InitialTileCount;
+        }
+
+        _window.UpdateTileProgression(completionPercentage);
+        _window.UpdateShredderEfficiency(current.ShredderEfficiency);
 
         for (var i = 0; i < current.Offers.Count; i++)
         {
@@ -58,7 +78,7 @@ public sealed class SalvageMagnetBoundUserInterface : BoundUserInterface
             var offer = salvageSystem.GetSalvageOffering(seed);
             var option = new OfferingWindowOption();
             option.MinWidth = 210f;
-            option.Disabled = current.EndTime != null;
+            option.Disabled = current.Active;
             option.Claimed = current.ActiveSeed == seed;
             var claimIndex = i;
 
@@ -176,8 +196,8 @@ public sealed class SalvageMagnetBoundUserInterface : BoundUserInterface
             offerExtra.SalvageMap = mapExtra;
             var optionExtra = new OfferingWindowOption();
             optionExtra.MinWidth = 210f;
-            optionExtra.Disabled = current.EndTime != null;
-            optionExtra.Claimed = current.ActiveSeed == seedExtra;
+            optionExtra.Disabled = current.Active;
+            optionExtra.Claimed = current.Active;
 
             optionExtra.ClaimPressed += _ =>
             {
