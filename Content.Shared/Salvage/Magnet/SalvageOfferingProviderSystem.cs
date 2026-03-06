@@ -28,7 +28,9 @@ public sealed class SalvageOfferingProviderSystem : EntitySystem
 
     private void OnMapInit(Entity<SalvageOfferingProviderComponent> entity, ref MapInitEvent args)
     {
-        entity.Comp.Offering = _random.Next(4, 7);
+        if (entity.Comp.Offering == 0)
+            entity.Comp.Offering = _random.Next(4, 7);
+
         var map = _salvage.TestGetSalvageMapPrototype(entity.Comp.Offering);
 
         if (map.JobConnection != null)

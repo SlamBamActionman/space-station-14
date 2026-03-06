@@ -81,8 +81,8 @@
 
 - type: entity
   id: SalvageWallpipeCoverClosedFuel
-  parent: BaseSalvageWallmount
-  description: Test entity. Screwable.
+  parent: [BaseSalvageWallmount, BaseSalvageExplosive]
+  description: Test entity. Screwable. NOT SHREDDABLE.
   components:
   - type: Sprite
     layers:
@@ -93,8 +93,8 @@
 
 - type: entity
   id: SalvageWallpipeCoverUnscrewedFuel
-  parent: BaseSalvageWallmount
-  description: Test entity. Pryable.
+  parent: [BaseSalvageWallmount, BaseSalvageExplosive]
+  description: Test entity. Pryable. NOT SHREDDABLE.
   components:
   - type: Sprite
     layers:
@@ -105,8 +105,8 @@
 
 - type: entity
   id: SalvageWallpipeFuel3
-  parent: BaseSalvageWallmount
-  description: Test entity. Wrenchable.
+  parent: [BaseSalvageWallmount, BaseSalvageExplosive]
+  description: Test entity. Wrenchable. NOT SHREDDABLE.
   components:
   - type: Sprite
     layers:
@@ -117,8 +117,8 @@
 
 - type: entity
   id: SalvageWallpipeFuel2
-  parent: BaseSalvageWallmount
-  description: Test entity. Wrenchable.
+  parent: [BaseSalvageWallmount, BaseSalvageExplosive]
+  description: Test entity. Wrenchable. NOT SHREDDABLE.
   components:
   - type: Sprite
     layers:
@@ -129,8 +129,8 @@
 
 - type: entity
   id: SalvageWallpipeFuel1
-  parent: BaseSalvageWallmount
-  description: Test entity. Wrenchable.
+  parent: [BaseSalvageWallmount, BaseSalvageExplosive]
+  description: Test entity. Wrenchable. NOT SHREDDABLE.
   components:
   - type: Sprite
     layers:
@@ -141,8 +141,8 @@
 
 - type: entity
   id: SalvagePlasmaPipe
-  parent: BaseSalvageScrapItem
-  description: Test entity. Recyclable.
+  parent: [BaseSalvageScrapItem, BaseSalvageExplosive]
+  description: Test entity. Recyclable. NOT SHREDDABLE.
   components:
   - type: Sprite
     layers:

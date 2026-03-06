@@ -35,3 +35,19 @@
   abstract: true
   components:
   - type: MultiHandedItem
+
+- type: entity
+  id: BaseSalvageExplosive
+  abstract: true
+  components:
+  - type: Explosive
+    explosionType: Default
+    maxIntensity: 10
+    totalIntensity: 75
+    intensitySlope: 7
+    canCreateVacuum: false
+    deleteAfterExplosion: false
+  - type: ExplodeOnReclaim
+    # reclaimerWhitelist:
+    #   components:
+    #  - TileReclaimer

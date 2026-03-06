@@ -22,9 +22,9 @@
 
 - type: entity
   id: SalvageTankFuelFrame
-  parent: BaseSalvageTankFrame
+  parent: [BaseSalvageTankFrame, BaseSalvageExplosive]
   name: ship fuel tank
-  description: Test entity. Pryable.
+  description: Test entity. Pryable. NOT SHREDDABLE.
   components:
   - type: Sprite
     layers:
@@ -35,9 +35,9 @@
 
 - type: entity
   id: SalvageTankFuel
-  parent: BaseSalvageScrapItemLarge
+  parent: [BaseSalvageScrapItemLarge, BaseSalvageExplosive]
   name: ship fuel tank
-  description: Test entity. Recyclable.
+  description: Test entity. Recyclable. NOT SHREDDABLE.
   components:
   - type: Sprite
     layers:
@@ -49,9 +49,9 @@
 
 - type: entity
   id: SalvageTankCryoFrame
-  parent: BaseSalvageTankFrame
+  parent: [BaseSalvageTankFrame, BaseSalvageExplosive]
   name: ship cryo tank
-  description: Test entity. Pryable.
+  description: Test entity. Pryable. NOT SHREDDABLE.
   components:
   - type: Sprite
     layers:
@@ -62,9 +62,9 @@
 
 - type: entity
   id: SalvageTankCryo
-  parent: BaseSalvageScrapItemLarge
+  parent: [BaseSalvageScrapItemLarge, BaseSalvageExplosive]
   name: ship cryo tank
-  description: Test entity. Recyclable.
+  description: Test entity. Recyclable. NOT SHREDDABLE.
   components:
   - type: Sprite
     layers:
