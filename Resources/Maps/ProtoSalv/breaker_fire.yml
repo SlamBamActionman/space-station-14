@@ -1,11 +1,11 @@
 meta:
   format: 7
   category: Grid
-  engineVersion: 271.1.0
+  engineVersion: 272.0.0
   forkId: ""
   forkVersion: ""
-  time: 03/08/2026 13:16:24
-  entityCount: 164
+  time: 03/08/2026 15:52:41
+  entityCount: 143
 maps: []
 grids:
 - 1
@@ -117,53 +117,41 @@ entities:
       data:
         tiles:
           0,0:
-            0: 187
-            1: 18436
-            2: 8192
-            3: 32768
+            0: 51391
+            1: 8192
           0,-1:
             0: 47104
-            2: 32
+            1: 32
           -1,0:
-            0: 136
-            3: 35
-            1: 20
-            2: 256
-          0,1:
+            0: 159
+            1: 256
             2: 32
-            3: 12
+          0,1:
+            1: 32
+            0: 12
           1,0:
-            0: 187
-            3: 4096
-            1: 4
-            2: 16384
+            0: 4287
+            1: 16384
           1,1:
-            3: 1
+            2: 1
           1,-1:
-            0: 45312
-            1: 16
-            2: 64
+            0: 45328
+            1: 64
           2,0:
-            0: 51
-            1: 1024
-            2: 2184
+            3: 1
+            0: 1074
+            1: 2184
           2,-1:
-            0: 12288
-            2: 34816
-            1: 1024
+            0: 13312
+            1: 34816
           -2,0:
-            2: 128
+            1: 128
           -2,-1:
-            2: 32768
+            1: 32768
           -1,-1:
             0: 32768
-            2: 1024
+            1: 1024
         uniqueMixes:
-        - volume: 2500
-          temperature: 5000
-          moles:
-            Oxygen: 6666.982
-            Plasma: 6666.982
         - volume: 2500
           temperature: 293.15
           moles:
@@ -175,6 +163,11 @@ entities:
         - volume: 2500
           temperature: 293.15
           moles:
+            Plasma: 6666.982
+        - volume: 2500
+          temperature: 5000
+          moles:
+            Oxygen: 6666.982
             Plasma: 6666.982
         chunkSize: 4
     - type: GasTileOverlay
@@ -252,126 +245,19 @@ entities:
     - type: Transform
       pos: 5.261437,0.506378
       parent: 1
-- proto: AtmosDeviceFanDirectional
-  entities:
-  - uid: 60
-    components:
-    - type: Transform
-      pos: 4.5,-2.5
-      parent: 1
 - proto: AtmosFixInstantPlasmaFireMarker
   entities:
-  - uid: 123
-    components:
-    - type: Transform
-      pos: 3.5,1.5
-      parent: 1
-  - uid: 124
-    components:
-    - type: Transform
-      pos: 3.5,0.5
-      parent: 1
-  - uid: 126
-    components:
-    - type: Transform
-      pos: 3.5,-1.5
-      parent: 1
-  - uid: 128
-    components:
-    - type: Transform
-      pos: 4.5,0.5
-      parent: 1
-  - uid: 129
-    components:
-    - type: Transform
-      pos: 4.5,-0.5
-      parent: 1
-  - uid: 132
-    components:
-    - type: Transform
-      pos: 5.5,0.5
-      parent: 1
-  - uid: 133
-    components:
-    - type: Transform
-      pos: 5.5,1.5
-      parent: 1
-  - uid: 134
-    components:
-    - type: Transform
-      pos: -0.5,1.5
-      parent: 1
-  - uid: 135
-    components:
-    - type: Transform
-      pos: -0.5,0.5
-      parent: 1
-  - uid: 139
-    components:
-    - type: Transform
-      pos: 0.5,-0.5
-      parent: 1
-  - uid: 140
-    components:
-    - type: Transform
-      pos: 1.5,1.5
-      parent: 1
-  - uid: 141
-    components:
-    - type: Transform
-      pos: 1.5,0.5
-      parent: 1
-  - uid: 166
-    components:
-    - type: Transform
-      pos: 7.5,1.5
-      parent: 1
-  - uid: 168
-    components:
-    - type: Transform
-      pos: 7.5,-0.5
-      parent: 1
   - uid: 170
     components:
     - type: Transform
       pos: 8.5,0.5
       parent: 1
-  - uid: 172
-    components:
-    - type: Transform
-      pos: 9.5,1.5
-      parent: 1
-  - uid: 174
-    components:
-    - type: Transform
-      pos: 9.5,-0.5
-      parent: 1
 - proto: AtmosFixPlasmaMarker
   entities:
-  - uid: 144
-    components:
-    - type: Transform
-      pos: 2.5,4.5
-      parent: 1
   - uid: 146
     components:
     - type: Transform
       pos: 4.5,4.5
-      parent: 1
-  - uid: 147
-    components:
-    - type: Transform
-      pos: 3.5,3.5
-      parent: 1
-  - uid: 148
-    components:
-    - type: Transform
-      pos: 4.5,3.5
-      parent: 1
-  - uid: 175
-    components:
-    - type: Transform
-      pos: -3.5,0.5
       parent: 1
   - uid: 177
     components:
@@ -706,10 +592,10 @@ entities:
       parent: 1
 - proto: RandomEngineerCorpseSpawner
   entities:
-  - uid: 163
+  - uid: 60
     components:
     - type: Transform
-      pos: 8.5,0.5
+      pos: 0.5,1.5
       parent: 1
 - proto: RustedThruster
   entities:
