@@ -4,8 +4,8 @@ meta:
   engineVersion: 271.1.0
   forkId: ""
   forkVersion: ""
-  time: 02/27/2026 12:01:27
-  entityCount: 182
+  time: 03/08/2026 10:16:57
+  entityCount: 184
 maps: []
 grids:
 - 1
@@ -558,6 +558,13 @@ entities:
     - type: Transform
       pos: 1.5,5.5
       parent: 1
+- proto: JetpackMiniFilled
+  entities:
+  - uid: 184
+    components:
+    - type: Transform
+      pos: 1.4751917,-8.471954
+      parent: 1
 - proto: LootSpawnerRandomCrateSecurity
   entities:
   - uid: 122
@@ -785,6 +792,15 @@ entities:
     - type: Transform
       pos: -0.4988761,4.464096
       parent: 1
+- proto: ShuttleManifest
+  entities:
+  - uid: 183
+    components:
+    - type: Transform
+      pos: 6.5193176,-1.5617775
+      parent: 1
+    - type: SalvageOfferingProvider
+      offering: 6
 - proto: SMESBasic
   entities:
   - uid: 123
