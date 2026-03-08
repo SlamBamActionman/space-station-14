@@ -2,10 +2,12 @@ using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Content.Server.Salvage.Magnet;
+using Content.Shared.Materials;
 using Content.Shared.Mobs.Components;
 using Content.Shared.Procedural;
 using Content.Shared.Radio;
 using Content.Shared.Salvage.Magnet;
+using Content.Shared.Tag;
 using Robust.Shared.Exceptions;
 using Robust.Shared.Map;
 using Robust.Shared.Prototypes;
@@ -15,17 +17,23 @@ namespace Content.Server.Salvage;
 public sealed partial class SalvageSystem
 {
     [Dependency] private readonly IRuntimeLog _runtimeLog = default!;
+    [Dependency] private readonly TagSystem _tag = default!;
 
     private static readonly ProtoId<RadioChannelPrototype> MagnetChannel = "Supply";
+    private static readonly ProtoId<TagPrototype> ValuableReclaimTag = "MagnetValuable";
 
+    private EntityQuery<SalvageMagnetTargetComponent> _salvageMagnetTargetQuery;
     private EntityQuery<SalvageMobRestrictionsComponent> _salvMobQuery;
+    private EntityQuery<SalvageMagnetValuableComponent> _salvMagnetValuableQuery;
     private EntityQuery<MobStateComponent> _mobStateQuery;
 
     private List<(Entity<TransformComponent> Entity, EntityUid MapUid, Vector2 LocalPosition)> _detachEnts = new();
 
     private void InitializeMagnet()
     {
+        _salvageMagnetTargetQuery = GetEntityQuery<SalvageMagnetTargetComponent>();
         _salvMobQuery = GetEntityQuery<SalvageMobRestrictionsComponent>();
+        _salvMagnetValuableQuery = GetEntityQuery<SalvageMagnetValuableComponent>();
         _mobStateQuery = GetEntityQuery<MobStateComponent>();
 
         SubscribeLocalEvent<SalvageMagnetDataComponent, MapInitEvent>(OnMagnetDataMapInit);
@@ -33,8 +41,48 @@ public sealed partial class SalvageSystem
         SubscribeLocalEvent<SalvageMagnetTargetComponent, GridSplitEvent>(OnMagnetTargetSplit);
 
         SubscribeLocalEvent<SalvageMagnetComponent, MagnetClaimOfferEvent>(OnMagnetClaim);
+        SubscribeLocalEvent<SalvageMagnetComponent, MagnetClaimOfferEventExtra>(OnMagnetClaimExtra);
+        SubscribeLocalEvent<SalvageMagnetComponent, MagnetClaimEndedEvent>(OnMagnetEnded);
         SubscribeLocalEvent<SalvageMagnetComponent, ComponentStartup>(OnMagnetStartup);
         SubscribeLocalEvent<SalvageMagnetComponent, AnchorStateChangedEvent>(OnMagnetAnchored);
+
+        SubscribeLocalEvent<TileChangedEvent>(OnTileChanged);
+
+        SubscribeLocalEvent<SalvageMagnetComponent, ExtraEntryChangedEvent>(OnExtraEntryChanged);
+
+        SubscribeLocalEvent<SalvageMagnetValuableComponent, GotReclaimedEvent>(OnReclaimed);
+    }
+
+    private void OnExtraEntryChanged(Entity<SalvageMagnetComponent> entity, ref ExtraEntryChangedEvent args)
+    {
+        entity.Comp.ExtraEntry = args.ExtraEntry;
+        UpdateMagnetUI(entity, Transform(entity));
+    }
+
+    // SLAM-NOTE: Shitty copypasted prototype code because I cba to properly code overwriting spawn choices.
+    private void OnMagnetClaimExtra(Entity<SalvageMagnetComponent> entity, ref MagnetClaimOfferEventExtra args)
+    {
+        var station = _station.GetOwningStation(entity);
+
+        if (!TryComp(station, out SalvageMagnetDataComponent? dataComp) ||
+            dataComp.Active)
+        {
+            return;
+        }
+
+        var index = args.Index;
+        async void TryTakeMagnetOffer(int i)
+        {
+            try
+            {
+                await TakeMagnetOffer((station.Value, dataComp), 0, entity, new SalvageOffering() { SalvageMap = TestGetSalvageMapPrototype(index) });
+            }
+            catch (Exception e)
+            {
+                _runtimeLog.LogException(e, $"{nameof(SalvageSystem)}.{nameof(TakeMagnetOffer)}");
+            }
+        }
+        TryTakeMagnetOffer(index);
     }
 
     private void OnMagnetClaim(EntityUid uid, SalvageMagnetComponent component, ref MagnetClaimOfferEvent args)
@@ -42,7 +90,7 @@ public sealed partial class SalvageSystem
         var station = _station.GetOwningStation(uid);
 
         if (!TryComp(station, out SalvageMagnetDataComponent? dataComp) ||
-            dataComp.EndTime != null)
+            dataComp.Active)
         {
             return;
         }
@@ -60,6 +108,26 @@ public sealed partial class SalvageSystem
             }
         }
         TryTakeMagnetOffer();
+    }
+
+    private void OnMagnetEnded(Entity<SalvageMagnetComponent> entity, ref MagnetClaimEndedEvent args)
+    {
+        var station = _station.GetOwningStation(entity);
+
+        if (!TryComp(station, out SalvageMagnetDataComponent? dataComp) ||
+            !dataComp.Active)
+        {
+            return;
+        }
+
+        var completionPercentage = 0f;
+        if (dataComp.InitialTileCount != 0)
+        {
+            completionPercentage = 1f - (float) dataComp.CurrentTileCount / dataComp.InitialTileCount;
+        }
+
+        Report(entity, MagnetChannel, $"Salvage operation has concluded after {(_timing.CurTime - dataComp.ClaimTime!).Value.ToString("mm\\:ss")}. Completion: {completionPercentage.ToString("P2")}");
+        EndMagnet((station.Value, dataComp));
     }
 
     private void OnMagnetStartup(EntityUid uid, SalvageMagnetComponent component, ComponentStartup args)
@@ -88,8 +156,51 @@ public sealed partial class SalvageSystem
             foreach (var gridUid in args.NewGrids)
             {
                 dataComp.ActiveEntities?.Add(gridUid);
+                var target = EnsureComp<SalvageMagnetTargetComponent>(gridUid);
+                target.DataTarget = component.DataTarget;
+            }
+
+            UpdateTileCalculation((component.DataTarget, dataComp));
+        }
+    }
+
+    private void OnTileChanged(ref TileChangedEvent ev)
+    {
+        if (!_salvageMagnetTargetQuery.TryComp(ev.Entity, out var targetGrid))
+            return;
+
+        if (!TryComp(targetGrid.DataTarget, out SalvageMagnetDataComponent? dataComp))
+            return;
+
+        UpdateTileCalculation((targetGrid.DataTarget, dataComp));
+    }
+
+    private void OnReclaimed(Entity<SalvageMagnetValuableComponent> entity, ref GotReclaimedEvent args)
+    {
+        if (_tag.HasTag(args.ReclaimerCoordinates.EntityId, ValuableReclaimTag))
+            return;
+
+        if (!TryComp<SalvageMagnetDataComponent>(entity.Comp.DataTarget, out var dataComp))
+            return;
+
+        dataComp.IncorrectlyProcessedValuablesCount += 1;
+        UpdateMagnetUIs((entity.Comp.DataTarget.Value, dataComp));
+    }
+
+    private void UpdateTileCalculation(Entity<SalvageMagnetDataComponent> data)
+    {
+        data.Comp.CurrentTileCount = 0;
+        if (data.Comp.ActiveEntities != null)
+        {
+            foreach (var grid in data.Comp.ActiveEntities)
+            {
+                if (!_gridQuery.TryGetComponent(grid, out var gridComponent))
+                    continue;
+
+                data.Comp.CurrentTileCount += _mapSystem.GetAllTiles(grid, gridComponent).Count();
             }
         }
+        UpdateMagnetUIs(data);
     }
 
     private void UpdateMagnet()
@@ -100,9 +211,9 @@ public sealed partial class SalvageSystem
         while (dataQuery.MoveNext(out var uid, out var magnetData))
         {
             // Magnet currently active.
-            if (magnetData.EndTime != null)
+            if (magnetData.Active)
             {
-                if (magnetData.EndTime.Value < curTime)
+                /*if (magnetData.EndTime.Value < curTime)
                 {
                     EndMagnet((uid, magnetData));
                 }
@@ -118,7 +229,7 @@ public sealed partial class SalvageSystem
                     }
 
                     magnetData.Announced = true;
-                }
+                }*/
             }
             if (magnetData.NextOffer < curTime)
             {
@@ -190,7 +301,20 @@ public sealed partial class SalvageSystem
             data.Comp.ActiveEntities = null;
         }
 
-        data.Comp.EndTime = null;
+        var valuablesQuery = AllEntityQuery<SalvageMagnetValuableComponent>();
+        while (valuablesQuery.MoveNext(out var valuable))
+        {
+            if (data.Owner == valuable.DataTarget)
+                valuable.DataTarget = null;
+        }
+
+        data.Comp.Active = false;
+        data.Comp.ClaimTime = null;
+        data.Comp.InitialTileCount = 0;
+        data.Comp.CurrentTileCount = 0;
+        data.Comp.InitialValuablesCount = 0;
+        data.Comp.IncorrectlyProcessedValuablesCount = 0;
+        CreateMagnetOffers(data);
         UpdateMagnetUIs(data);
     }
 
@@ -249,9 +373,14 @@ public sealed partial class SalvageSystem
             {
                 Cooldown = dataComp.OfferCooldown,
                 Duration = dataComp.ActiveTime,
-                EndTime = dataComp.EndTime,
+                Active = dataComp.Active,
+                ClaimTime = dataComp.ClaimTime,
                 NextOffer = dataComp.NextOffer,
+                InitialTileCount = dataComp.InitialTileCount,
+                CurrentTileCount = dataComp.CurrentTileCount,
+                ShredderEfficiency = (dataComp.InitialValuablesCount <= 0 ? 1f : 1f - (float) dataComp.IncorrectlyProcessedValuablesCount / dataComp.InitialValuablesCount),
                 ActiveSeed = dataComp.ActiveSeed,
+                ExtraEntry = entity.Comp.ExtraEntry,
             });
     }
 
@@ -271,25 +400,32 @@ public sealed partial class SalvageSystem
                 {
                     Cooldown = data.Comp.OfferCooldown,
                     Duration = data.Comp.ActiveTime,
-                    EndTime = data.Comp.EndTime,
+                    Active = data.Comp.Active,
+                    ClaimTime = data.Comp.ClaimTime,
                     NextOffer = data.Comp.NextOffer,
+                    InitialTileCount = data.Comp.InitialTileCount,
+                    CurrentTileCount = data.Comp.CurrentTileCount,
+                    ShredderEfficiency = (data.Comp.InitialValuablesCount <= 0 ? 1f : 1f - (float) data.Comp.IncorrectlyProcessedValuablesCount / data.Comp.InitialValuablesCount),
                     ActiveSeed = data.Comp.ActiveSeed,
+                    ExtraEntry = magnet.ExtraEntry,
                 });
         }
     }
 
-    private async Task TakeMagnetOffer(Entity<SalvageMagnetDataComponent> data, int index, Entity<SalvageMagnetComponent> magnet)
+    private async Task TakeMagnetOffer(Entity<SalvageMagnetDataComponent> data, int index, Entity<SalvageMagnetComponent> magnet, ISalvageMagnetOffering? salvageMagnetOffering = null)
     {
         var seed = data.Comp.Offered[index];
 
-        var offering = GetSalvageOffering(seed);
+        var offering = salvageMagnetOffering ?? GetSalvageOffering(seed);
         var salvMap = _mapSystem.CreateMap();
-        var salvMapXform = Transform(salvMap);
+        var salvMapXform
+            = Transform(salvMap);
 
         // Set values while awaiting asteroid dungeon if relevant so we can't double-take offers.
         data.Comp.ActiveSeed = seed;
-        data.Comp.EndTime = _timing.CurTime + data.Comp.ActiveTime;
-        data.Comp.NextOffer = data.Comp.EndTime.Value;
+        data.Comp.Active = true;
+        data.Comp.ClaimTime = _timing.CurTime;
+        //data.Comp.NextOffer = data.Comp.EndTime.Value;
         UpdateMagnetUIs(data);
 
         switch (offering)
@@ -381,10 +517,15 @@ public sealed partial class SalvageSystem
 
         data.Comp.ActiveEntities = null;
         mapChildren = salvMapXform.ChildEnumerator;
+        var tileCount = 0;
+        var initialValuables = 0;
 
         // It worked, move it into position and cleanup values.
         while (mapChildren.MoveNext(out var mapChild))
         {
+            if (!_gridQuery.TryGetComponent(mapChild, out var childGrid))
+                continue;
+
             var salvXForm = _xformQuery.GetComponent(mapChild);
             var localPos = salvXForm.LocalPosition;
 
@@ -393,23 +534,35 @@ public sealed partial class SalvageSystem
 
             data.Comp.ActiveEntities ??= new List<EntityUid>();
             data.Comp.ActiveEntities?.Add(mapChild);
+            var target = EnsureComp<SalvageMagnetTargetComponent>(mapChild);
+            target.DataTarget = data.Owner;
+
+            tileCount += _mapSystem.GetAllTiles(mapChild, childGrid).Count();
 
             // Handle mob restrictions
             var children = salvXForm.ChildEnumerator;
 
             while (children.MoveNext(out var child))
             {
-                if (!_salvMobQuery.TryGetComponent(child, out var salvMob))
-                    continue;
+                if (_salvMobQuery.TryGetComponent(child, out var salvMob))
+                    salvMob.LinkedEntity = mapChild;
 
-                salvMob.LinkedEntity = mapChild;
+                if (_salvMagnetValuableQuery.TryGetComponent(child, out var magnetValuable))
+                {
+                    initialValuables += 1;
+                    magnetValuable.DataTarget = data.Owner;
+                }
             }
         }
 
-        Report(magnet.Owner, MagnetChannel, "salvage-system-announcement-arrived", ("timeLeft", data.Comp.ActiveTime.TotalSeconds));
+        //Report(magnet.Owner, MagnetChannel, "salvage-system-announcement-arrived", ("timeLeft", data.Comp.ActiveTime.TotalSeconds));
         _mapSystem.DeleteMap(salvMapXform.MapID);
 
         data.Comp.Announced = false;
+        data.Comp.InitialTileCount = tileCount;
+        data.Comp.CurrentTileCount = tileCount;
+        data.Comp.InitialValuablesCount = initialValuables;
+        data.Comp.IncorrectlyProcessedValuablesCount = 0;
 
         var active = new SalvageMagnetActivatedEvent()
         {

@@ -1,20 +1,7 @@
 <controls:FancyWindow xmlns="https://spacestation14.io"
                       xmlns:controls="clr-namespace:Content.Client.UserInterface.Controls"
                       MinSize="800 360">
-    <BoxContainer Orientation="Vertical">
-        <BoxContainer Orientation="Horizontal" Name="ProgressionBox" Visible="False">
-            <Label Name="ProgressionLabel"
-                   Text="{Loc 'salvage-expedition-window-progression'}"
-                   SetWidth="96"
-                   Margin="5"/>
-            <ProgressBar Name="ProgressionBar"
-                         HorizontalExpand="True"
-                         MinValue="0"
-                         MaxValue="1"
-                         SetHeight="25"/>
-            <Label Name="ProgressionText" Text="00:00"
-                   Margin="5"/>
-        </BoxContainer>
+    <BoxContainer Name="OfferingContainer" Orientation="Vertical">
         <BoxContainer Orientation="Horizontal">
             <Label Name="NextOfferLabel"
                    Text="{Loc 'salvage-expedition-window-next'}"
@@ -32,5 +19,42 @@
         <BoxContainer Name="Container"
                       Orientation="Horizontal"
                       Margin="5 0 5 0"/>
+    </BoxContainer>
+    <BoxContainer Name="WreckContainer" Orientation="Vertical" Visible="False">
+        <BoxContainer Orientation="Horizontal">
+            <Label Name="WreckCompletionLabel"
+                   Text="Shredder Completion:"
+                   Margin="5"/>
+            <ProgressBar Name="WreckCompletionBar"
+                         HorizontalExpand="True"
+                         MinValue="0"
+                         MaxValue="1"
+                         SetHeight="25"/>
+            <Label Name="WreckCompletionText" Text="0%"
+                   Margin="5"/>
+        </BoxContainer>
+        <BoxContainer Orientation="Horizontal">
+            <Label Name="EfficiencyLabel"
+                   Text="Shredder Efficiency:"
+                   Margin="5"/>
+            <RichTextLabel Name="EfficiencyText" Text="100%"
+                   Margin="5"/>
+        </BoxContainer>
+        <BoxContainer Orientation="Horizontal">
+            <Label Name="ClaimTimerLabel"
+                   Text="Wreck Time:"
+                   SetWidth="96"
+                   Margin="5"/>
+            <Label Name="ClaimTimerText" Text="0.00"
+                   Margin="5"/>
+        </BoxContainer>
+        <Button Name="EndButton"
+                Text="End Salvage Operation"
+                ToolTip="Ends the current Salvage session."
+                SetWidth="200"/>
+        <Label Text="Make sure to manually extract all valuable materials from the wreck, for optimal Shredder Efficiency!"
+               Margin="5 5 5 15"
+               FontColorOverride="#a8a8a8"
+               HorizontalAlignment="Center"/>
     </BoxContainer>
 </controls:FancyWindow>

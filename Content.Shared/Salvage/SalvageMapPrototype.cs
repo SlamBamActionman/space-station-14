@@ -1,3 +1,4 @@
+using Content.Shared.Roles;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Utility;
 
@@ -18,4 +19,22 @@ public sealed partial class SalvageMapPrototype : IPrototype
     /// </summary>
     [DataField(required: true)]
     public LocId SizeString;
+
+    /// <summary>
+    /// SLAM-NOTE: Display the wreck type I guess. This is probably an enum or something in the future.
+    /// </summary>
+    [DataField]
+    public LocId WreckTypeString = "Default";
+
+    /// <summary>
+    /// SLAM-NOTE: Display the wreck name!
+    /// </summary>
+    [DataField]
+    public LocId WreckNameString = "Default";
+
+    /// <summary>
+    /// SLAM-NOTE: Job prototype this wreck is tied to, if any.
+    /// </summary>
+    [DataField]
+    public ProtoId<JobPrototype>? JobConnection = null;
 }

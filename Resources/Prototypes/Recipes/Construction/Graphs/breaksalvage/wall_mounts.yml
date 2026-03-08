@@ -1,0 +1,117 @@
+﻿- type: constructionGraph
+  id: SalvageWallpipes
+  start: closedCover
+  graph:
+  - node: closedCover
+    entity: SalvageWallpipeCoverClosed
+    edges:
+    - to: unscrewedCover
+      steps:
+      - tool: Screwing
+        doAfter: 2
+  - node: unscrewedCover
+    entity: SalvageWallpipeCoverUnscrewed
+    edges:
+    - to: wallcoverSilver3
+      steps:
+      - tool: Prying
+        doAfter: 2
+  - node: wallcoverSilver3
+    entity: SalvageWallpipeSilver3
+    edges:
+    - to: wallcoverSilver2
+      completed:
+      - !type:GivePrototype
+        prototype: SalvageSilverPipe
+        amount: 1
+      steps:
+      - tool: Anchoring
+        doAfter: 2
+  - node: wallcoverSilver2
+    entity: SalvageWallpipeSilver2
+    edges:
+    - to: wallcoverSilver1
+      completed:
+      - !type:GivePrototype
+        prototype: SalvageSilverPipe
+        amount: 1
+      steps:
+      - tool: Anchoring
+        doAfter: 2
+  - node: wallcoverSilver1
+    entity: SalvageWallpipeSilver1
+    edges:
+    - to: wallcoverEmpty
+      completed:
+      - !type:GivePrototype
+        prototype: SalvageSilverPipe
+        amount: 1
+      steps:
+      - tool: Anchoring
+        doAfter: 2
+  - node: wallcoverEmpty
+    entity: SalvageWallpipeEmpty
+    actions:
+    - !type:AppearanceChange
+
+- type: constructionGraph
+  id: SalvageWallpipesFuel
+  start: closedCover
+  graph:
+  - node: closedCover
+    entity: SalvageWallpipeCoverClosedFuel
+    edges:
+    - to: unscrewedCover
+      steps:
+      - tool: Screwing
+        doAfter: 2
+
+  - node: unscrewedCover
+    entity: SalvageWallpipeCoverUnscrewedFuel
+    edges:
+    - to: wallcoverFuel3
+      steps:
+      - tool: Prying
+        doAfter: 2
+
+  - node: wallcoverFuel3
+    entity: SalvageWallpipeFuel3
+    edges:
+    - to: wallcoverFuel2
+      completed:
+      - !type:GivePrototype
+        prototype: SalvagePlasmaPipe
+        amount: 1
+      steps:
+      - tool: Anchoring
+        doAfter: 2
+
+  - node: wallcoverFuel2
+    entity: SalvageWallpipeFuel2
+    edges:
+    - to: wallcoverFuel1
+      completed:
+      - !type:GivePrototype
+        prototype: SalvagePlasmaPipe
+        amount: 1
+      steps:
+      - tool: Anchoring
+        doAfter: 2
+
+  - node: wallcoverFuel1
+    entity: SalvageWallpipeFuel1
+    edges:
+    - to: wallcoverEmpty
+      completed:
+      - !type:GivePrototype
+        prototype: SalvagePlasmaPipe
+        amount: 1
+      steps:
+      - tool: Anchoring
+        doAfter: 2
+
+  - node: wallcoverEmpty
+    entity: SalvageWallpipeEmpty
+    actions:
+    - !type:AppearanceChange
+

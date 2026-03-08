@@ -5,6 +5,7 @@ using Content.Shared.Body;
 using Content.Shared.Database;
 using Content.Shared.Emag.Systems;
 using Content.Shared.Examine;
+using Content.Shared.Explosion.EntitySystems;
 using Content.Shared.Mobs.Components;
 using Content.Shared.Stacks;
 using Content.Shared.Whitelist;
@@ -29,6 +30,7 @@ public abstract class SharedMaterialReclaimerSystem : EntitySystem
     [Dependency] protected readonly SharedContainerSystem Container = default!;
     [Dependency] private readonly EntityWhitelistSystem _whitelistSystem = default!;
     [Dependency] private readonly EmagSystem _emag = default!;
+    [Dependency] private readonly SharedExplosionSystem _explosion = default!;
 
     public const string ActiveReclaimerContainerId = "active-material-reclaimer-container";
 
@@ -41,6 +43,8 @@ public abstract class SharedMaterialReclaimerSystem : EntitySystem
         SubscribeLocalEvent<MaterialReclaimerComponent, MapInitEvent>(OnMapInit);
         SubscribeLocalEvent<CollideMaterialReclaimerComponent, StartCollideEvent>(OnCollide);
         SubscribeLocalEvent<ActiveMaterialReclaimerComponent, ComponentStartup>(OnActiveStartup);
+
+        SubscribeLocalEvent<ExplodeOnReclaimComponent, GotReclaimedEvent>(OnExplosiveReclaim);
     }
 
     private void OnMapInit(EntityUid uid, MaterialReclaimerComponent component, MapInitEvent args)
@@ -83,6 +87,16 @@ public abstract class SharedMaterialReclaimerSystem : EntitySystem
         component.ReclaimingContainer = Container.EnsureContainer<Container>(uid, ActiveReclaimerContainerId);
     }
 
+    private void OnExplosiveReclaim(Entity<ExplodeOnReclaimComponent> entity, ref GotReclaimedEvent args)
+    {
+        Logger.Debug(args.ReclaimerCoordinates.EntityId.ToString());
+        if (_whitelistSystem.IsWhitelistPassOrNull(entity.Comp.ReclaimerWhitelist, args.ReclaimerUid))
+        {
+            Logger.Debug("2");
+            _explosion.TriggerExplosive(entity);
+        }
+    }
+
     /// <summary>
     /// Tries to start processing an item via a <see cref="MaterialReclaimerComponent"/>.
     /// </summary>
@@ -117,7 +131,7 @@ public abstract class SharedMaterialReclaimerSystem : EntitySystem
             component.NextSound = Timing.CurTime + component.SoundCooldown;
         }
 
-        var reclaimedEvent = new GotReclaimedEvent(Transform(uid).Coordinates);
+        var reclaimedEvent = new GotReclaimedEvent(Transform(uid).Coordinates, uid);
         RaiseLocalEvent(item, ref reclaimedEvent);
 
         var duration = GetReclaimingDuration(uid, item, component);
@@ -256,4 +270,4 @@ public abstract class SharedMaterialReclaimerSystem : EntitySystem
 }
 
 [ByRefEvent]
-public record struct GotReclaimedEvent(EntityCoordinates ReclaimerCoordinates);
+public record struct GotReclaimedEvent(EntityCoordinates ReclaimerCoordinates, EntityUid ReclaimerUid);

@@ -1,0 +1,27 @@
+﻿- type: entity
+  parent: BaseItem
+  id: ShuttleManifest
+  name: shuttle manifest
+  description: A manifest to some old shuttle wrecks. Needs to be authorized by someone with the appropriate access.
+  components:
+  - type: Appearance
+  - type: GenericVisualizer
+    visuals:
+      enum.LockVisuals.Locked:
+        enum.SalvageOfferingProviderVisualLayers.Lock:
+          True: { visible: true, state: locked }
+          False: { visible: true, state: unlocked }
+  - type: Sprite
+    sprite: Objects/Specific/Salvage/shuttle_manifest.rsi
+    layers:
+    - state: locked
+      map: [ "enum.SalvageOfferingProviderVisualLayers.Lock" ]
+    - map: [ "enum.SalvageOfferingProviderVisualLayers.JobStamp" ]
+      offset: 0.125, 0.1875
+  - type: SalvageOfferingProvider
+  - type: AccessReader
+    loggingDisabled: true
+  - type: Lock
+    unlockOnClick: false
+    unlockInHand: true
+    allowRepeatedLocking: false

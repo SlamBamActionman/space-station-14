@@ -1,0 +1,26 @@
+- type: entity
+  id: SalvageGoldMotor
+  parent: BaseSalvageScrapStructureDynamic
+  name: gold-plated motor
+  description: Test entity. Recyclable.
+  components:
+  - type: Sprite
+    layers:
+    - state: gold_motor
+  - type: PhysicalComposition
+    materialComposition:
+      Gold: 3000 # 30 ingots
+      Silver: 3000 # 30 ingots
+
+- type: entity
+  id: SalvageUraniumRod
+  parent: BaseSalvageScrapItem
+  name: uranium rod
+  description: Test entity.
+  components:
+  - type: Sprite
+    layers:
+    - state: uranium_rod
+  - type: PhysicalComposition
+    materialComposition:
+      Uranium: 1500 # 15 sheets

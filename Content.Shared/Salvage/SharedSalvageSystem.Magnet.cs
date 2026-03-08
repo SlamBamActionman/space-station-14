@@ -1,3 +1,4 @@
+using System.Linq;
 using Content.Shared.Destructible.Thresholds;
 using Content.Shared.Procedural;
 using Content.Shared.Procedural.DungeonLayers;
@@ -16,9 +17,7 @@ public abstract partial class SharedSalvageSystem
 
     private readonly Dictionary<ISalvageMagnetOffering, float> _offeringWeights = new()
     {
-        { new AsteroidOffering(), 4.5f },
-        { new DebrisOffering(), 3.5f },
-        { new SalvageOffering(), 2.0f },
+        { new SalvageOffering(), 1.0f }, //SLAM-NOTE: We set Salvage offerings to 100%
     };
 
     private readonly List<ProtoId<DungeonConfigPrototype>> _asteroidConfigs = new()
@@ -87,7 +86,7 @@ public abstract partial class SharedSalvageSystem
             case SalvageOffering:
                 // Salvage map seed
                 _salvageMaps.Clear();
-                _salvageMaps.AddRange(_proto.EnumeratePrototypes<SalvageMapPrototype>());
+                _salvageMaps.AddRange(_proto.EnumeratePrototypes<SalvageMapPrototype>().Where(x => x.JobConnection == null));
                 _salvageMaps.Sort((x, y) => string.Compare(x.ID, y.ID, StringComparison.Ordinal));
                 var mapIndex = rand.Next(_salvageMaps.Count);
                 var map = _salvageMaps[mapIndex];
@@ -99,5 +98,24 @@ public abstract partial class SharedSalvageSystem
             default:
                 throw new NotImplementedException($"Salvage type {type} not implemented!");
         }
+    }
+
+
+    /// <summary>
+    /// SLAM-TODO: This is dirty prototyping code. Needs replacing with proper map handling.
+    /// </summary>
+    public SalvageMapPrototype TestGetSalvageMapPrototype(int testValue)
+    {
+        switch (testValue)
+        {
+            case 4:
+                return _proto.Index<SalvageMapPrototype>($"ChunkyMedicalShadow");
+            case 5:
+                return _proto.Index<SalvageMapPrototype>($"ChunkySecElectricalDefended");
+            case 6:
+                return _proto.Index<SalvageMapPrototype>($"ChunkyServiceOvergrownAnchored");
+        }
+
+        return _proto.Index<SalvageMapPrototype>($"ChunkyServiceOvergrownAnchored");
     }
 }
