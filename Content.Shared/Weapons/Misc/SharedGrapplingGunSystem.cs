@@ -1,5 +1,6 @@
 using System.Numerics;
 using Content.Shared.CombatMode;
+using Content.Shared.Gravity;
 using Content.Shared.Hands;
 using Content.Shared.Hands.EntitySystems;
 using Content.Shared.Interaction;
@@ -33,6 +34,7 @@ public abstract class SharedGrapplingGunSystem : VirtualController
     [Dependency] private readonly SharedGunSystem _gun = default!;
     [Dependency] private readonly SharedPhysicsSystem _physics = default!;
     [Dependency] private readonly SharedTransformSystem _transform = default!;
+    [Dependency] private readonly SharedGravitySystem _gravity = default!;
     [Dependency] private readonly SharedContainerSystem _container = default!;
 
     public const string GrapplingJoint = "grappling";
@@ -243,7 +245,6 @@ public abstract class SharedGrapplingGunSystem : VirtualController
                 continue;
             }
 
-
             // TODO: Contracting DistanceJoints should be in engine
             if (distance.MaxLength >= ropeLength + grappling.RopeMargin)
             {
@@ -254,25 +255,74 @@ public abstract class SharedGrapplingGunSystem : VirtualController
                 distance.Length = ropeLength;
             }
 
+            // Checks if the entity is "tied" to the grid it is on via anti-gravity technology.
+            bool attachedToGrid;
+            if (jointComp.Relay != null)
+            {
+                // It would be nice if any resisting force applied to the grid (e.g. if stuck on something and can't move closer) would transfer to the main entity,
+                // but that seems very tricky to implement.
+                _physics.WakeBody(jointComp.Relay.Value);
+                attachedToGrid = !_gravity.IsWeightless(jointComp.Relay.Value) && !_gravity.IsWeightlessStatusFromGrid(jointComp.Relay.Value);
+            }
+            else
+            {
+                attachedToGrid = !_gravity.IsWeightless(joint.BodyAUid) && !_gravity.IsWeightlessStatusFromGrid(joint.BodyAUid);
+            }
+
+            if (_transform.GetGrid(joint.BodyAUid) == _transform.GetGrid(joint.BodyBUid))
+                attachedToGrid = false;
+
             if (ropeLength <= distance.MinLength + grappling.RopeFullyReeledMargin)
             {
                 SetReeling(uid, grappling, false, null);
             }
+
             else if (ropeLength >= distance.MaxLength - grappling.RopeMargin)
             {
                 var targetDirection = (bodyAWorldPos - bodyBWorldPos).Normalized();
 
                 var grapplerUidA = _container.TryGetOuterContainer(physicalHook, Transform(physicalHook), out var containerA) ? containerA.Owner : physicalHook;
+                if (attachedToGrid)
+                    grapplerUidA = _transform.GetGrid(joint.BodyAUid) ?? grapplerUidA;
+                var grapplerOffsetA = _transform.GetRelativePosition(Transform(joint.BodyAUid), grapplerUidA);
                 var grapplerBodyA = Comp<PhysicsComponent>(grapplerUidA);
 
-                var massFactorA = MathF.Min(grapplerBodyA.InvMass * grappling.ReelMassCoefficient, 1f);
-                _physics.ApplyLinearImpulse(grapplerUidA, targetDirection * grappling.ReelForce * massFactorA * frameTime * -1, body: grapplerBodyA);
-
                 var grapplerUidB = _container.TryGetOuterContainer(physicalGrapple, Transform(physicalGrapple), out var containerB) ? containerB.Owner : physicalGrapple;
+                if (attachedToGrid)
+                    grapplerUidB = _transform.GetGrid(joint.BodyBUid) ?? grapplerUidB;
+                var grapplerOffsetB = _transform.GetRelativePosition(Transform(joint.BodyBUid), grapplerUidB);
                 var grapplerBodyB = Comp<PhysicsComponent>(grapplerUidB);
 
-                var massFactorB = MathF.Min(grapplerBodyB.InvMass * grappling.ReelMassCoefficient, 1f);
-                _physics.ApplyLinearImpulse(grapplerUidB, targetDirection * grappling.ReelForce * massFactorB * frameTime, body: grapplerBodyB);
+                // Handle edge-cases where the mass is zero (e.g. station anchor). Treat that as infinite weight.
+                float massFactor;
+                if (grapplerBodyA.Mass == 0f && grapplerBodyB.Mass != 0f)
+                {
+                    massFactor = 1f;
+                }
+                else if (grapplerBodyA.Mass != 0f && grapplerBodyB.Mass == 0f)
+                {
+                    massFactor = 0f;
+                }
+                else if (grapplerBodyA.Mass == 0f && grapplerBodyB.Mass == 0f)
+                {
+                    massFactor = 0.5f;
+                }
+                else
+                {
+                    // This assumes the bodies can move freely. Could be a bit iffy.
+                    massFactor = grapplerBodyA.Mass / (grapplerBodyA.Mass + grapplerBodyB.Mass);
+                }
+
+                // We do this log function to scale pull speed. Around 180000kg should be considered the max pullable for someone wearing magbooots.
+                // SLAM-TODO: This can be scaled better. Consider using linear scaling in stages, rather than some obscure log method...
+                var massFactorA2 = MathF.Max(2.5f - 0.2f * MathF.Log(grapplerBodyA.Mass + 1800), 0f);
+                var massFactorB2 = MathF.Max(2.5f - 0.2f * MathF.Log(grapplerBodyB.Mass + 1800), 0f);
+
+                var massFactorA = grapplerBodyA.Mass * (1 - massFactor);
+                _physics.ApplyLinearImpulse(grapplerUidA, targetDirection * massFactorA * massFactorA2 * grappling.ReelForce * frameTime * -1, grapplerOffsetA, body: grapplerBodyA);
+
+                var massFactorB = grapplerBodyB.Mass * massFactor;
+                _physics.ApplyLinearImpulse(grapplerUidB, targetDirection * massFactorB * massFactorB2 * grappling.ReelForce * frameTime, grapplerOffsetB, body: grapplerBodyB);
             }
 
             Dirty(uid, jointComp);
