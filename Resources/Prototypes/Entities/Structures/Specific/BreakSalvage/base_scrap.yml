@@ -48,6 +48,6 @@
     canCreateVacuum: false
     deleteAfterExplosion: false
   - type: ExplodeOnReclaim
-    # reclaimerWhitelist:
-    #   components:
-    #  - TileReclaimer
+    reclaimerWhitelist:
+      components:
+      - TileReclaimer
