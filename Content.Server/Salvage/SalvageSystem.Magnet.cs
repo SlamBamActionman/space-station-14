@@ -20,7 +20,7 @@ public sealed partial class SalvageSystem
     [Dependency] private readonly TagSystem _tag = default!;
 
     private static readonly ProtoId<RadioChannelPrototype> MagnetChannel = "Supply";
-    private static readonly ProtoId<TagPrototype> ValuableReclaimTag = "MagnetValuable";
+    private static readonly ProtoId<TagPrototype> ValuableReclaimTag = "MagnetValuableReclaimer";
 
     private EntityQuery<SalvageMagnetTargetComponent> _salvageMagnetTargetQuery;
     private EntityQuery<SalvageMobRestrictionsComponent> _salvMobQuery;
@@ -121,12 +121,14 @@ public sealed partial class SalvageSystem
         }
 
         var completionPercentage = 0f;
+        var efficiencyPercentage = 0f;
         if (dataComp.InitialTileCount != 0)
         {
             completionPercentage = 1f - (float) dataComp.CurrentTileCount / dataComp.InitialTileCount;
+            efficiencyPercentage = 1f - (float) dataComp.IncorrectlyProcessedValuablesCount / dataComp.InitialValuablesCount;
         }
 
-        Report(entity, MagnetChannel, $"Salvage operation has concluded after {(_timing.CurTime - dataComp.ClaimTime!).Value.ToString("mm\\:ss")}. Completion: {completionPercentage.ToString("P2")}");
+        Report(entity, MagnetChannel, $"Salvage operation has concluded after {(_timing.CurTime - dataComp.ClaimTime!).Value.ToString("mm\\:ss")}. Completion: {completionPercentage.ToString("P2")}. Efficiency: {efficiencyPercentage.ToString("P0")}.");
         EndMagnet((station.Value, dataComp));
     }
 
@@ -177,7 +179,7 @@ public sealed partial class SalvageSystem
 
     private void OnReclaimed(Entity<SalvageMagnetValuableComponent> entity, ref GotReclaimedEvent args)
     {
-        if (_tag.HasTag(args.ReclaimerCoordinates.EntityId, ValuableReclaimTag))
+        if (_tag.HasTag(args.ReclaimerUid, ValuableReclaimTag))
             return;
 
         if (!TryComp<SalvageMagnetDataComponent>(entity.Comp.DataTarget, out var dataComp))

@@ -918,6 +918,9 @@
   id: Maints # RoomFill spawner whitelist for MaintsRoomMarker.
 
 - type: Tag
+  id: MagnetValuableReclaimer # For reclaimers that won't penalize magnet valuable tracking when reclaiming
+
+- type: Tag
   id: Matchstick # Storage whitelist: Ashtray. ConstructionGraph: ImprovisedShotgunShellGraph
 
 - type: Tag

@@ -115,3 +115,6 @@
   - type: Speech
     speechVerb: Robotic
     speechSounds: SyndieBorg
+  - type: Tag
+    tags:
+    - MagnetValuableReclaimer
