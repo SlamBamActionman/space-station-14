@@ -191,8 +191,6 @@ entities:
     - type: Transform
       pos: 4.5,0.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
 - proto: CableApcExtension
   entities:
   - uid: 106
@@ -801,8 +799,6 @@ entities:
       rot: -1.5707963267948966 rad
       pos: -1.5,-2.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
 - proto: SalvageWallpipeCoverClosedFuel
   entities:
   - uid: 176
@@ -811,16 +807,12 @@ entities:
       rot: -1.5707963267948966 rad
       pos: 3.5,-0.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 177
     components:
     - type: Transform
       rot: 1.5707963267948966 rad
       pos: -1.5,4.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
 - proto: ScrapPAIGold
   entities:
   - uid: 178

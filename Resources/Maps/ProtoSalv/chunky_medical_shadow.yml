@@ -192,8 +192,6 @@ entities:
       rot: -1.5707963267948966 rad
       pos: -1.5,-0.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
 - proto: CableApcExtension
   entities:
   - uid: 106
@@ -578,16 +576,12 @@ entities:
       rot: -1.5707963267948966 rad
       pos: -1.5,-2.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 131
     components:
     - type: Transform
       rot: 3.141592653589793 rad
       pos: 1.5,3.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
 - proto: ScrapGeneratorUranium
   entities:
   - uid: 138
@@ -657,379 +651,271 @@ entities:
     - type: Transform
       pos: -0.5,0.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 143
     components:
     - type: Transform
       pos: -0.5,-0.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 144
     components:
     - type: Transform
       pos: -0.5,-1.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 145
     components:
     - type: Transform
       pos: -0.5,-2.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 146
     components:
     - type: Transform
       pos: -0.5,-3.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 147
     components:
     - type: Transform
       pos: 0.5,0.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 148
     components:
     - type: Transform
       pos: 0.5,-0.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 149
     components:
     - type: Transform
       pos: 0.5,-1.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 150
     components:
     - type: Transform
       pos: 0.5,-2.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 151
     components:
     - type: Transform
       pos: 0.5,-3.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 152
     components:
     - type: Transform
       pos: 1.5,0.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 153
     components:
     - type: Transform
       pos: 1.5,-0.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 154
     components:
     - type: Transform
       pos: 1.5,-1.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 155
     components:
     - type: Transform
       pos: 1.5,-2.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 156
     components:
     - type: Transform
       pos: 1.5,-3.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 157
     components:
     - type: Transform
       pos: 2.5,0.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 158
     components:
     - type: Transform
       pos: 2.5,-0.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 159
     components:
     - type: Transform
       pos: 2.5,-1.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 160
     components:
     - type: Transform
       pos: 2.5,-2.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 161
     components:
     - type: Transform
       pos: 2.5,-3.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 162
     components:
     - type: Transform
       pos: 4.5,-0.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 163
     components:
     - type: Transform
       pos: 4.5,-1.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 164
     components:
     - type: Transform
       pos: 4.5,-2.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 165
     components:
     - type: Transform
       pos: 5.5,-0.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 166
     components:
     - type: Transform
       pos: 5.5,-1.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 167
     components:
     - type: Transform
       pos: 5.5,-2.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 168
     components:
     - type: Transform
       pos: 6.5,-0.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 169
     components:
     - type: Transform
       pos: 6.5,-1.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 170
     components:
     - type: Transform
       pos: 6.5,-2.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 171
     components:
     - type: Transform
       pos: 2.5,-7.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 172
     components:
     - type: Transform
       pos: 2.5,-8.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 173
     components:
     - type: Transform
       pos: 1.5,-7.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 174
     components:
     - type: Transform
       pos: 1.5,-8.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 175
     components:
     - type: Transform
       pos: 0.5,-7.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 176
     components:
     - type: Transform
       pos: 0.5,-8.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 177
     components:
     - type: Transform
       pos: -0.5,-7.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 178
     components:
     - type: Transform
       pos: -0.5,-8.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 179
     components:
     - type: Transform
       pos: -0.5,5.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 180
     components:
     - type: Transform
       pos: -0.5,4.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 181
     components:
     - type: Transform
       pos: 0.5,5.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 182
     components:
     - type: Transform
       pos: 0.5,4.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 183
     components:
     - type: Transform
       pos: 1.5,5.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 184
     components:
     - type: Transform
       pos: 1.5,4.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 185
     components:
     - type: Transform
       pos: 2.5,5.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 186
     components:
     - type: Transform
       pos: 2.5,4.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 187
     components:
     - type: Transform
       pos: -2.5,-0.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 188
     components:
     - type: Transform
       pos: -2.5,-1.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 189
     components:
     - type: Transform
       pos: -2.5,-2.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 190
     components:
     - type: Transform
       pos: -3.5,-0.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 191
     components:
     - type: Transform
       pos: -3.5,-1.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 192
     components:
     - type: Transform
       pos: -3.5,-2.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 193
     components:
     - type: Transform
       pos: -4.5,-0.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 194
     components:
     - type: Transform
       pos: -4.5,-1.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
   - uid: 195
     components:
     - type: Transform
       pos: -4.5,-2.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
 - proto: ShadowPortal
   entities:
   - uid: 208

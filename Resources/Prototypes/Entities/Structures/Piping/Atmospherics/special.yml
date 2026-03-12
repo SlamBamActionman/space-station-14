@@ -22,12 +22,15 @@
             bounds: "-0.5,-0.5,0.5,0.5"
         mask:
         - DoorPassable
+        layer:
+        - DoorPassable
   - type: Airtight
     noAirWhenFullyAirBlocked: false
   - type: Clickable
   - type: Tag
     tags:
       - SpreaderIgnore
+  - type: Pullable
 
 - type: entity
   id: AtmosDeviceFanDirectional
@@ -52,6 +55,8 @@
             bounds: "-0.48,-0.48,0.48,-0.40"
         mask:
         - DoorPassable
+        layer:
+        - DoorPassable
   - type: Airtight
     noAirWhenFullyAirBlocked: false
     airBlockedDirection:
@@ -60,3 +65,4 @@
   - type: Tag
     tags:
       - SpreaderIgnore
+  - type: Pullable
