@@ -191,8 +191,6 @@ entities:
     - type: Transform
       pos: 8.5,2.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
 - proto: AtmosDeviceFanDirectional
   entities:
   - uid: 60

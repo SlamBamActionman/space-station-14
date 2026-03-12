@@ -202,8 +202,6 @@ entities:
     - type: Transform
       pos: 8.5,2.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
 - proto: AtmosDeviceFanDirectional
   entities:
   - uid: 60
@@ -615,8 +613,6 @@ entities:
     - type: Transform
       pos: 0.5,2.5
       parent: 1
-    - type: Fixtures
-      fixtures: {}
 - proto: ScrapGeneratorPlasmaLeaking
   entities:
   - uid: 125
