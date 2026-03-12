@@ -30,7 +30,6 @@
   - type: Tag
     tags:
       - SpreaderIgnore
-  - type: Pullable
 
 - type: entity
   id: AtmosDeviceFanDirectional
@@ -65,4 +64,3 @@
   - type: Tag
     tags:
       - SpreaderIgnore
-  - type: Pullable
