@@ -4,8 +4,8 @@ using Robust.Shared.Prototypes;
 namespace Content.Shared.Access;
 
 /// <summary>
-///     Contains a list of access tags that are part of this group.
-///     Used by <see cref="AccessComponent"/> to avoid boilerplate.
+/// Contains a list of access tags that are part of this group.
+/// Used by <see cref="AccessComponent"/> to avoid boilerplate.
 /// </summary>
 [Prototype]
 public sealed partial class AccessGroupPrototype : IPrototype
@@ -25,6 +25,9 @@ public sealed partial class AccessGroupPrototype : IPrototype
     [DataField(required: true)]
     public HashSet<ProtoId<AccessLevelPrototype>> Tags = default!;
 
+    /// <summary>
+    /// Returns the given name string of the prototype; falls back to the ID otherwise.
+    /// </summary>
     public string GetAccessGroupName()
     {
         if (Name is { } name)

@@ -1,4 +1,3 @@
-using Content.Shared.Actions;
 using Robust.Shared.GameStates;
 using Robust.Shared.Serialization;
 
@@ -47,5 +46,5 @@ public enum ItemActionIconStyle : byte
     /// <summary>
     /// BigAction but no item icon will be shown in the corner.
     /// </summary>
-    NoItem
+    NoItem,
 }

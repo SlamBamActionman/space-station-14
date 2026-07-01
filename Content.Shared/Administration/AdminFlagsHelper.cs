@@ -110,6 +110,9 @@ namespace Content.Shared.Administration
             return array;
         }
 
+        /// <summary>
+        /// Converts an admin's flags into a string with positive/negative indicators.
+        /// </summary>
         public static string PosNegFlagsText(AdminFlags posFlags, AdminFlags negFlags)
         {
             var posFlagNames = FlagsToNames(posFlags).Select(f => (flag: f, fText: $"+{f}"));

@@ -97,6 +97,11 @@ public sealed partial class AccessReaderComponent : Component
     public LocId ExaminationText = "access-reader-examination";
 }
 
+/// <summary>
+/// Struct storing information when and who accessed the AccessReader.
+/// </summary>
+/// <param name="AccessTime">Time since the round started.</param>
+/// <param name="Accessor">The name of the accessor, usually based on the ID.</param>
 [DataDefinition, Serializable, NetSerializable]
 public readonly partial record struct AccessRecord(
     [property: DataField, ViewVariables(VVAccess.ReadWrite)]

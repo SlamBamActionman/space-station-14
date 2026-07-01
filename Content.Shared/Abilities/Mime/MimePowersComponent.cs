@@ -14,7 +14,7 @@ public sealed partial class MimePowersComponent : Component
 {
     /// <summary>
     /// Whether this component is active or not.
-    /// </summarY>
+    /// </summary>
     [DataField, AutoNetworkedField]
     public bool Enabled = true;
 
@@ -24,13 +24,23 @@ public sealed partial class MimePowersComponent : Component
     [DataField, AutoNetworkedField]
     public EntProtoId WallPrototype = "WallInvisible";
 
+    /// <summary>
+    /// Action to create the mime wall.
+    /// </summary>
     [DataField]
     public EntProtoId? InvisibleWallAction = "ActionMimeInvisibleWall";
 
+    /// <summary>
+    /// Stores the invisible wall entity.
+    /// </summary>
     [DataField, AutoNetworkedField]
     public EntityUid? InvisibleWallActionEntity;
 
     // The vow zone lies below
+
+    /// <summary>
+    /// Whether the vow is broken or not.
+    /// </summary>
     [DataField, AutoNetworkedField]
     public bool VowBroken = false;
 
@@ -54,9 +64,15 @@ public sealed partial class MimePowersComponent : Component
     [DataField, AutoNetworkedField]
     public TimeSpan VowCooldown = TimeSpan.FromMinutes(5);
 
+    /// <summary>
+    /// Alert for the vow being active.
+    /// </summary>
     [DataField]
     public ProtoId<AlertPrototype> VowAlert = "VowOfSilence";
 
+    /// <summary>
+    /// Alert for the vow being broken.
+    /// </summary>
     [DataField]
     public ProtoId<AlertPrototype> VowBrokenAlert = "VowBroken";
 

@@ -2,6 +2,9 @@
 
 namespace Content.Shared.Administration;
 
+/// <summary>
+/// Freezes a player stopping them from taking any actions. Optionally mutes them.
+/// </summary>
 [RegisterComponent, Access(typeof(AdminFrozenSystem))]
 [NetworkedComponent, AutoGenerateComponentState]
 public sealed partial class AdminFrozenComponent : Component

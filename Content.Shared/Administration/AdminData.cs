@@ -2,13 +2,13 @@
 namespace Content.Shared.Administration
 {
     /// <summary>
-    ///     Represents data for a single server admin.
+    /// Represents data for a single server admin.
     /// </summary>
     public sealed class AdminData
     {
         // Can be false if they're de-adminned with the ability to re-admin.
         /// <summary>
-        ///     Whether the admin is currently active. This can be false if they have de-adminned mid-round.
+        /// Whether the admin is currently active. This can be false if they have de-adminned mid-round.
         /// </summary>
         public bool Active;
 
@@ -18,17 +18,17 @@ namespace Content.Shared.Administration
         public bool Stealth;
 
         /// <summary>
-        ///     The admin's title.
+        /// The admin's title.
         /// </summary>
         public string? Title;
 
         /// <summary>
-        ///     The admin's permission flags.
+        /// The admin's permission flags.
         /// </summary>
         public AdminFlags Flags;
 
         /// <summary>
-        ///     Checks whether this admin has an admin flag.
+        /// Checks whether this admin has an admin flag.
         /// </summary>
         /// <param name="flag">The flags to check. Multiple flags can be specified, they must all be held.</param>
         /// <param name="includeDeAdmin">If true then also count flags even if the admin has de-adminned.</param>
@@ -39,7 +39,7 @@ namespace Content.Shared.Administration
         }
 
         /// <summary>
-        ///     Check if this admin can spawn stuff in with the entity/tile spawn panel.
+        /// Check if this admin can spawn stuff in with the entity/tile spawn panel.
         /// </summary>
         public bool CanAdminPlace()
         {
@@ -47,7 +47,7 @@ namespace Content.Shared.Administration
         }
 
         /// <summary>
-        ///     Check if this admin can execute server-side C# scripts.
+        /// Check if this admin can execute server-side C# scripts.
         /// </summary>
         public bool CanScript()
         {
@@ -55,7 +55,7 @@ namespace Content.Shared.Administration
         }
 
         /// <summary>
-        ///     Check if this admin can open the admin menu.
+        /// Check if this admin can open the admin menu.
         /// </summary>
         public bool CanAdminMenu()
         {
@@ -70,6 +70,9 @@ namespace Content.Shared.Administration
             return HasFlag(AdminFlags.Stealth);
         }
 
+        /// <summary>
+        /// Check if this admin can reload prototypes on the server.
+        /// </summary>
         public bool CanAdminReloadPrototypes()
         {
             return HasFlag(AdminFlags.Host);

@@ -20,6 +20,9 @@ public sealed partial class AccessComponent : Component
     [AutoNetworkedField]
     public bool Enabled = true;
 
+    /// <summary>
+    /// Access Tags. Individual accesses provided on the access provider.
+    /// </summary>
     [DataField]
     [Access(typeof(SharedAccessSystem), Other = AccessPermissions.ReadExecute)] // FIXME Friends
     [AutoNetworkedField]
@@ -49,6 +52,9 @@ public struct GetAdditionalAccessEvent
 [ByRefEvent]
 public record struct GetAccessTagsEvent(HashSet<ProtoId<AccessLevelPrototype>> Tags, IPrototypeManager PrototypeManager)
 {
+    /// <summary>
+    /// Unions the provided group into existing access tags.
+    /// </summary>
     public void AddGroup(ProtoId<AccessGroupPrototype> group)
     {
         if (!PrototypeManager.Resolve<AccessGroupPrototype>(group, out var groupPrototype))

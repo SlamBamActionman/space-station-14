@@ -7,16 +7,32 @@ using Robust.Shared.Serialization;
 
 namespace Content.Shared.Access.Components;
 
+/// <summary>
+/// Allows a console to rename and assign jobs/accesses to ID cards.
+/// </summary>
 [RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
 [Access(typeof(SharedIdCardConsoleSystem))]
 public sealed partial class IdCardConsoleComponent : Component
 {
+    /// <summary>
+    /// String name of the privileged ID slot.
+    /// </summary>
     public static string PrivilegedIdCardSlotId = "IdCardConsole-privilegedId";
+
+    /// <summary>
+    /// String name of the target ID slot.
+    /// </summary>
     public static string TargetIdCardSlotId = "IdCardConsole-targetId";
 
+    /// <summary>
+    /// <see cref="ItemSlot"/> for the privileged ID providing accesses.
+    /// </summary>
     [DataField]
     public ItemSlot PrivilegedIdSlot = new();
 
+    /// <summary>
+    /// <see cref="ItemSlot"/> for the target ID being changed.
+    /// </summary>
     [DataField]
     public ItemSlot TargetIdSlot = new();
 
@@ -39,6 +55,9 @@ public sealed partial class IdCardConsoleComponent : Component
 
     // Put this on shared so we just send the state once in PVS range rather than every time the UI updates.
 
+    /// <summary>
+    /// All available access levels that can be edited by the console.
+    /// </summary>
     [DataField, AutoNetworkedField]
     public List<ProtoId<AccessLevelPrototype>> AccessLevels = new()
     {

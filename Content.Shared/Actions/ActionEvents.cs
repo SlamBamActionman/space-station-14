@@ -69,6 +69,9 @@ public sealed class GetItemActionsEvent : EntityEventArgs
         AddAction(ref actionId, prototypeId, Provider);
     }
 
+    /// <summary>
+    /// Grant the given action. If the EntityUid does not refer to an entity, the action will not be added.
+    /// </summary>
     public void AddAction(EntityUid? actionId)
     {
         if (actionId != null)
@@ -77,7 +80,7 @@ public sealed class GetItemActionsEvent : EntityEventArgs
 }
 
 /// <summary>
-///     Event used to communicate with the server that a client wishes to perform some action.
+/// Event used to communicate with the server that a client wishes to perform some action.
 /// </summary>
 [Serializable, NetSerializable]
 public sealed class RequestPerformActionEvent : EntityEventArgs
@@ -112,21 +115,21 @@ public sealed class RequestPerformActionEvent : EntityEventArgs
 }
 
 /// <summary>
-///     This is the type of event that gets raised when an <see cref="InstantAction"/> is performed. The <see
-///     cref="Performer"/> field is automatically filled out by the <see cref="SharedActionsSystem"/>.
+/// This is the type of event that gets raised when an <see cref="InstantActionComponent"/> is performed. The <see
+/// cref="Performer"/> field is automatically filled out by the <see cref="SharedActionsSystem"/>.
 /// </summary>
 /// <remarks>
-///     To define a new action for some system, you need to create an event that inherits from this class.
+/// To define a new action for some system, you need to create an event that inherits from this class.
 /// </remarks>
 public abstract partial class InstantActionEvent : BaseActionEvent { }
 
 /// <summary>
-///     This is the type of event that gets raised when an <see cref="EntityTargetAction"/> is performed. The <see
-///     cref="Performer"/> and <see cref="Target"/> fields will automatically be filled out by the <see
-///     cref="SharedActionsSystem"/>.
+/// This is the type of event that gets raised when an <see cref="EntityTargetActionComponent"/> is performed. The <see
+/// cref="Performer"/> and <see cref="Target"/> fields will automatically be filled out by the <see
+/// cref="SharedActionsSystem"/>.
 /// </summary>
 /// <remarks>
-///     To define a new action for some system, you need to create an event that inherits from this class.
+/// To define a new action for some system, you need to create an event that inherits from this class.
 /// </remarks>
 public abstract partial class EntityTargetActionEvent : BaseActionEvent
 {
@@ -137,30 +140,29 @@ public abstract partial class EntityTargetActionEvent : BaseActionEvent
 }
 
 /// <summary>
-///     This is the type of event that gets raised when an <see cref="WorldTargetAction"/> is performed. The <see
-///     cref="Performer"/> and <see cref="Target"/> fields will automatically be filled out by the <see
-///     cref="SharedActionsSystem"/>.
+/// This is the type of event that gets raised when an <see cref="WorldTargetActionComponent"/> is performed. The <see
+/// cref="Performer"/> and <see cref="Target"/> fields will automatically be filled out by the <see
+/// cref="SharedActionsSystem"/>.
 /// </summary>
 /// <remarks>
-///     To define a new action for some system, you need to create an event that inherits from this class.
+/// To define a new action for some system, you need to create an event that inherits from this class.
 /// </remarks>
 public abstract partial class WorldTargetActionEvent : BaseActionEvent
 {
     /// <summary>
-    ///     The coordinates of the location that the user targeted.
+    /// The coordinates of the location that the user targeted.
     /// </summary>
     public EntityCoordinates Target;
 
     /// <summary>
-    /// When combined with <see cref="EntityTargetAction"/> (and <c>Event</c> is null), the entity the client was hovering when clicked.
+    /// When combined with <see cref="EntityTargetActionComponent"/> (and <c>Event</c> is null), the entity the client was hovering when clicked.
     /// This can be null as the primary purpose of this event is for getting coordinates.
     /// </summary>
     public EntityUid? Entity;
 }
 
 /// <summary>
-///     Base class for events that are raised when an action gets performed. This should not generally be used outside of the action
-///     system.
+/// Base class for events that are raised when an action gets performed. This should not generally be used outside of the action system.
 /// </summary>
 [ImplicitDataDefinitionForInheritors]
 public abstract partial class BaseActionEvent : HandledEntityEventArgs

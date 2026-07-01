@@ -28,11 +28,17 @@ namespace Content.Shared.ActionBlocker
         // These two methods should probably both live in SharedMoverController
         // but they're called in a million places and I'm not doing that
         // refactor right now.
+        /// <summary>
+        /// Check if the entity is allowed to move or not via input.
+        /// </summary>
         public bool CanMove(EntityUid uid, InputMoverComponent? component = null)
         {
             return Resolve(uid, ref component, false) && component.CanMove;
         }
 
+        /// <summary>
+        /// Checks whether the movement blocker should be updated via <see cref="UpdateCanMoveEvent"/>.
+        /// </summary>
         public bool UpdateCanMove(EntityUid uid, InputMoverComponent? component = null)
         {
             if (!Resolve(uid, ref component, false))
@@ -127,6 +133,11 @@ namespace Content.Shared.ActionBlocker
             return !ev.Cancelled;
         }
 
+        /// <summary>
+        /// Whether a user can throw a specific entity.
+        /// </summary>
+        /// <param name="user">The user entity performing the throw.</param>
+        /// <param name="itemUid">The entity being thrown.</param>
         public bool CanThrow(EntityUid user, EntityUid itemUid)
         {
             var ev = new ThrowAttemptEvent(user, itemUid);
@@ -141,6 +152,9 @@ namespace Content.Shared.ActionBlocker
             return !itemEv.Cancelled;
         }
 
+        /// <summary>
+        /// Whether a user can speak, i.e. send messages in the chat.
+        /// </summary>
         public bool CanSpeak(EntityUid uid)
         {
             // This one is used as broadcast
@@ -150,6 +164,9 @@ namespace Content.Shared.ActionBlocker
             return !ev.Cancelled;
         }
 
+        /// <summary>
+        /// Whether an entity can be dropped by another entity.
+        /// </summary>
         public bool CanDrop(EntityUid uid)
         {
             var ev = new DropAttemptEvent();
@@ -178,6 +195,9 @@ namespace Content.Shared.ActionBlocker
             return !itemEv.Cancelled;
         }
 
+        /// <summary>
+        /// Whether the entity can perform emotes.
+        /// </summary>
         public bool CanEmote(EntityUid uid)
         {
             // This one is used as broadcast
@@ -187,6 +207,13 @@ namespace Content.Shared.ActionBlocker
             return !ev.Cancelled;
         }
 
+        /// <summary>
+        /// Whether an entity is able to perform a melee attack.
+        /// </summary>
+        /// <param name="uid">The entity checking for the attack.</param>
+        /// <param name="target">The target, if there is one.</param>
+        /// <param name="weapon">The weapon used, if there is one.</param>
+        /// <param name="disarm">If the attack is a disarm.</param>
         public bool CanAttack(EntityUid uid, EntityUid? target = null, Entity<MeleeWeaponComponent>? weapon = null, bool disarm = false)
         {
             // If target is in a container can we attack
@@ -220,6 +247,10 @@ namespace Content.Shared.ActionBlocker
             return !tev.Cancelled;
         }
 
+        /// <summary>
+        /// Whether the entity is able to change the direction it is facing.
+        /// </summary>
+        /// <remarks>Such as when buckled to a chair.</remarks>
         public bool CanChangeDirection(EntityUid uid)
         {
             var ev = new ChangeDirectionAttemptEvent(uid);
@@ -228,6 +259,9 @@ namespace Content.Shared.ActionBlocker
             return !ev.Cancelled;
         }
 
+        /// <summary>
+        /// Whether the entity is able to shiver, i.e. increase body temperature when cold.
+        /// </summary>
         public bool CanShiver(EntityUid uid)
         {
             var ev = new ShiverAttemptEvent(uid);
@@ -236,6 +270,9 @@ namespace Content.Shared.ActionBlocker
             return !ev.Cancelled;
         }
 
+        /// <summary>
+        /// Whether the entity is able to sweat, i.e. lower body temperature when warm.
+        /// </summary>
         public bool CanSweat(EntityUid uid)
         {
             var ev = new SweatAttemptEvent(uid);

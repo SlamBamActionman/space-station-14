@@ -2,6 +2,7 @@ using Content.Shared.StatusIcon;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Serialization;
 
+// TODO: Move this to the correct namespace
 namespace Content.Shared.Access.Systems
 {
     public abstract class SharedAgentIdCardSystem : EntitySystem
@@ -10,7 +11,7 @@ namespace Content.Shared.Access.Systems
     }
 
     /// <summary>
-    /// Key representing which <see cref="PlayerBoundUserInterface"/> is currently open.
+    /// Key representing which <see cref="BoundUserInterface"/> is currently open.
     /// Useful when there are multiple UI for an object. Here it's future-proofing only.
     /// </summary>
     [Serializable, NetSerializable]
@@ -20,7 +21,7 @@ namespace Content.Shared.Access.Systems
     }
 
     /// <summary>
-    /// Represents an <see cref="AgentIDCardComponent"/> state that can be sent to the client
+    /// Represents an <see cref="AgentIDCardComponent"/> state that can be sent to the client.
     /// </summary>
     [Serializable, NetSerializable]
     public sealed class AgentIDCardBoundUserInterfaceState : BoundUserInterfaceState

@@ -13,7 +13,18 @@ public sealed class BanListEuiState : EuiStateBase
         RoleBans = roleBans;
     }
 
+    /// <summary>
+    /// The player name to use for the UI window title.
+    /// </summary>
     public string BanListPlayerName { get; }
+
+    /// <summary>
+    /// List of bans for the player.
+    /// </summary>
     public List<SharedBan> Bans { get; }
+
+    /// <summary>
+    /// List of rolebans for the player.
+    /// </summary>
     public List<SharedBan> RoleBans { get; }
 }

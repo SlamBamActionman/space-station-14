@@ -7,27 +7,46 @@ using Robust.Shared.Serialization;
 
 namespace Content.Shared.Access.Components;
 
+/// <summary>
+/// Enables an item to change the accesses of access-locked entities.
+/// </summary>
+/// <remarks>Currently used for the Access Configurator item.</remarks>
 [RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
 [Access(typeof(SharedAccessOverriderSystem))]
 public sealed partial class AccessOverriderComponent : Component
 {
+    /// <summary>
+    /// Slot ID for the privileged ID.
+    /// </summary>
     public static string PrivilegedIdCardSlotId = "AccessOverrider-privilegedId";
 
     /// <summary>
-    /// If the Access Overrider UI will show info about the privileged ID
+    /// If the Access Overrider UI will show info about the privileged ID.
     /// </summary>
     [DataField]
     public bool ShowPrivilegedId = true;
 
+    /// <summary>
+    /// Item slot for the privileged ID to be inserted into.
+    /// </summary>
     [DataField]
     public ItemSlot PrivilegedIdSlot = new();
 
+    /// <summary>
+    /// Sound to play if the access can't be changed for an entity.
+    /// </summary>
     [ViewVariables(VVAccess.ReadWrite)]
     [DataField]
     public SoundSpecifier? DenialSound;
 
+    /// <summary>
+    /// Access reader having its access adjusted.
+    /// </summary>
     public EntityUid TargetAccessReaderId = new();
 
+    /// <summary>
+    /// BUI message for updating the access list.
+    /// </summary>
     [Serializable, NetSerializable]
     public sealed class WriteToTargetAccessReaderIdMessage : BoundUserInterfaceMessage
     {
@@ -39,9 +58,15 @@ public sealed partial class AccessOverriderComponent : Component
         }
     }
 
+    /// <summary>
+    /// The access levels that should show up in the UI for selection.
+    /// </summary>
     [DataField, AutoNetworkedField]
     public List<ProtoId<AccessLevelPrototype>> AccessLevels = new();
 
+    /// <summary>
+    /// Doafter length.
+    /// </summary>
     [ViewVariables(VVAccess.ReadWrite)]
     [DataField]
     public float DoAfter;

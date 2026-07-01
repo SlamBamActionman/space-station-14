@@ -13,6 +13,10 @@ public sealed class AdminCommandPermissions
     // Commands only executable by admins with one of the given flag masks.
     public readonly Dictionary<string, AdminFlags[]> AdminCommands = new();
 
+    /// <summary>
+    /// Reads and loads the admin flag configuration required to execute commands from a given permissions file.
+    /// </summary>
+    /// <param name="fs">The stream being read.</param>
     public void LoadPermissionsFromStream(Stream fs)
     {
         using var reader = new StreamReader(fs, EncodingHelpers.UTF8);
@@ -50,6 +54,12 @@ public sealed class AdminCommandPermissions
         }
     }
 
+    /// <summary>
+    /// Whether a specific admin can perform a given command.
+    /// </summary>
+    /// <param name="cmdName">The command to check for.</param>
+    /// <param name="admin">The data associated with the admin.</param>
+    /// <returns>Returns true if the admin can run the command.</returns>
     public bool CanCommand(string cmdName, AdminData? admin)
     {
         if (AnyCommands.Contains(cmdName))

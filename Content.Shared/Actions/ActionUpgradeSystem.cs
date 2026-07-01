@@ -56,6 +56,14 @@ public sealed partial class ActionUpgradeSystem : EntitySystem
         Del(uid);
     }
 
+    /// <summary>
+    /// Attempts to upgrade an upgradable action, either to a set level or just an increase.
+    /// </summary>
+    /// <param name="actionId">Action entity to be upgraded.</param>
+    /// <param name="upgradeActionId">The upgraded action entity.</param>
+    /// <param name="actionUpgradeComponent">Action upgrade component.</param>
+    /// <param name="newLevel">The level to upgrade to. If 0, increases the level by one.</param>
+    /// <returns></returns>
     public bool TryUpgradeAction(EntityUid? actionId, out EntityUid? upgradeActionId, ActionUpgradeComponent? actionUpgradeComponent = null, int newLevel = 0)
     {
         upgradeActionId = null;
@@ -132,8 +140,13 @@ public sealed partial class ActionUpgradeSystem : EntitySystem
     }
 
     /// <summary>
-    ///     Raises a level by one
+    /// Attempts to upgrade an upgradable action, either to a set level or just an increase.
     /// </summary>
+    /// <param name="actionId">Action entity to be upgraded.</param>
+    /// <param name="newActionProto">The action entity prototype for the upgraded action.</param>
+    /// <param name="actionUpgradeComponent">Action upgrade component.</param>
+    /// <param name="newLevel">The level to upgrade to. If 0, increases the level by one.</param>
+    /// <returns></returns>
     public EntityUid? UpgradeAction(EntityUid? actionId, ActionUpgradeComponent? actionUpgradeComponent = null, EntProtoId? newActionProto = null, int newLevel = 0)
     {
         if (!TryGetActionUpgrade(actionId, out var actionUpgradeComp))
@@ -195,6 +208,13 @@ public sealed partial class ActionUpgradeSystem : EntitySystem
         RaiseLocalEvent(actionId, ev);
     }
 
+    /// <summary>
+    /// Try to get the upgrade component from an action entity.
+    /// </summary>
+    /// <param name="uid">Action entity to check component for.</param>
+    /// <param name="result">The component, if it exists.</param>
+    /// <param name="logError">Logs the error if true.</param>
+    /// <returns>Returns true if the component was found</returns>
     public bool TryGetActionUpgrade(
         [NotNullWhen(true)] EntityUid? uid,
         [NotNullWhen(true)] out ActionUpgradeComponent? result,

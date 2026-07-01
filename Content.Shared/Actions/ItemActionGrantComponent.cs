@@ -9,6 +9,9 @@ namespace Content.Shared.Actions;
 [RegisterComponent, NetworkedComponent, AutoGenerateComponentState, Access(typeof(ActionGrantSystem))]
 public sealed partial class ItemActionGrantComponent : Component
 {
+    /// <summary>
+    /// Actions prototype IDs, to be granted from the item.
+    /// </summary>
     [DataField(required: true), AutoNetworkedField, AlwaysPushInheritance]
     public List<EntProtoId> Actions = new();
 

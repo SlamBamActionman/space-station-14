@@ -116,6 +116,12 @@ public abstract partial class SharedActionsSystem : EntitySystem
         return (ent, ent.Comp);
     }
 
+    /// <summary>
+    /// Sets the cooldown of the provided action entity.
+    /// </summary>
+    /// <param name="action">Entity to be have its cooldown set.</param>
+    /// <param name="start">Start time.</param>
+    /// <param name="end">End time.</param>
     public void SetCooldown(Entity<ActionComponent?>? action, TimeSpan start, TimeSpan end)
     {
         if (GetAction(action) is not {} ent)
@@ -129,6 +135,10 @@ public abstract partial class SharedActionsSystem : EntitySystem
         DirtyField(ent, ent.Comp, nameof(ActionComponent.Cooldown));
     }
 
+    /// <summary>
+    /// Removed the cooldown of an action entity.
+    /// </summary>
+    /// <param name="action">Entity to be have its cooldown removed.</param>
     public void RemoveCooldown(Entity<ActionComponent?>? action)
     {
         if (GetAction(action) is not {} ent)
@@ -141,12 +151,18 @@ public abstract partial class SharedActionsSystem : EntitySystem
     /// <summary>
     /// Starts a cooldown starting now, lasting for <c>cooldown</c> seconds.
     /// </summary>
+    /// <param name="action">Entity to be have its cooldown set.</param>
+    /// <param name="cooldown">The duration of the cooldown.</param>
     public void SetCooldown(Entity<ActionComponent?>? action, TimeSpan cooldown)
     {
         var start = GameTiming.CurTime;
         SetCooldown(action, start, start + cooldown);
     }
 
+    /// <summary>
+    /// "Clears" the cooldown of the action entity, setting it to end right now rather than removing it fully.
+    /// </summary>
+    /// <param name="action">Entity to be have its cooldown cleared.</param>
     public void ClearCooldown(Entity<ActionComponent?>? action)
     {
         if (GetAction(action) is not {} ent)
@@ -164,7 +180,7 @@ public abstract partial class SharedActionsSystem : EntitySystem
     }
 
     /// <summary>
-    ///     Sets the cooldown for this action only if it is bigger than the one it already has.
+    /// Sets the cooldown for this action only if it is bigger than the one it already has.
     /// </summary>
     public void SetIfBiggerCooldown(Entity<ActionComponent?>? action, TimeSpan cooldown)
     {
@@ -191,6 +207,9 @@ public abstract partial class SharedActionsSystem : EntitySystem
         SetCooldown((ent, ent), delay);
     }
 
+    /// <summary>
+    /// Changes the use delay used for action cooldowns.
+    /// </summary>
     public void SetUseDelay(Entity<ActionComponent?>? action, TimeSpan? delay)
     {
         if (GetAction(action) is not {} ent || ent.Comp.UseDelay == delay)
@@ -201,6 +220,9 @@ public abstract partial class SharedActionsSystem : EntitySystem
         DirtyField(ent, ent.Comp, nameof(ActionComponent.UseDelay));
     }
 
+    /// <summary>
+    /// Reduces the use delay used for action cooldowns.
+    /// </summary>
     public void ReduceUseDelay(Entity<ActionComponent?>? action, TimeSpan? lowerDelay)
     {
         if (GetAction(action) is not {} ent)
@@ -224,12 +246,19 @@ public abstract partial class SharedActionsSystem : EntitySystem
         }
     }
 
+
     #region ComponentStateManagement
+    /// <summary>
+    /// Updates the action visuals on the client.
+    /// </summary>
     public virtual void UpdateAction(Entity<ActionComponent> ent)
     {
         // See client-side code.
     }
 
+    /// <summary>
+    /// Sets the action's toggle state.
+    /// </summary>
     public void SetToggled(Entity<ActionComponent?>? action, bool toggled)
     {
         if (GetAction(action) is not {} ent || ent.Comp.Toggled == toggled)
@@ -240,6 +269,9 @@ public abstract partial class SharedActionsSystem : EntitySystem
         DirtyField(ent, ent.Comp, nameof(ActionComponent.Toggled));
     }
 
+    /// <summary>
+    /// Sets the action's enabled state.
+    /// </summary>
     public void SetEnabled(Entity<ActionComponent?>? action, bool enabled)
     {
         if (GetAction(action) is not {} ent || ent.Comp.Enabled == enabled)
@@ -254,8 +286,8 @@ public abstract partial class SharedActionsSystem : EntitySystem
 
     #region Execution
     /// <summary>
-    ///     When receiving a request to perform an action, this validates whether the action is allowed. If it is, it
-    ///     will raise the relevant action event
+    /// When receiving a request to perform an action, this validates whether the action is allowed. If it is, it
+    /// will raise the relevant action event
     /// </summary>
     private void OnActionRequest(RequestPerformActionEvent ev, EntitySessionEventArgs args)
     {
@@ -413,6 +445,13 @@ public abstract partial class SharedActionsSystem : EntitySystem
         }
     }
 
+    /// <summary>
+    /// Validates that a target entity passes whitelist/range/interaction requirements.
+    /// </summary>
+    /// <param name="user">The user performing the action.</param>
+    /// <param name="target">The target of the action.</param>
+    /// <param name="ent">The action entity.</param>
+    /// <returns>True if the target passes the validation.</returns>
     public bool ValidateEntityTarget(EntityUid user, EntityUid target, Entity<EntityTargetActionComponent> ent)
     {
         var (uid, comp) = ent;
@@ -446,6 +485,13 @@ public abstract partial class SharedActionsSystem : EntitySystem
         return _interaction.IsAccessible(user, target);
     }
 
+    /// <summary>
+    /// Validates that a target position passes range/same map/access requirements.
+    /// </summary>
+    /// <param name="user">The user performing the action.</param>
+    /// <param name="target">The target coordinates.</param>
+    /// <param name="ent">The action entity.</param>
+    /// <returns></returns>
     public bool ValidateWorldTarget(EntityUid user, EntityCoordinates target, Entity<WorldTargetActionComponent> ent)
     {
         var targetAction = Comp<TargetActionComponent>(ent);
@@ -596,6 +642,7 @@ public abstract partial class SharedActionsSystem : EntitySystem
 
     #region AddRemoveActions
 
+    /// <inheritdoc cref="AddAction(Robust.Shared.GameObjects.EntityUid,ref System.Nullable{Robust.Shared.GameObjects.EntityUid},string?,Robust.Shared.GameObjects.EntityUid,ActionsComponent?)"/>
     public EntityUid? AddAction(EntityUid performer,
         [ForbidLiteral] string? actionPrototypeId,
         EntityUid container = default,
@@ -607,8 +654,8 @@ public abstract partial class SharedActionsSystem : EntitySystem
     }
 
     /// <summary>
-    ///     Adds an action to an action holder. If the given entity does not exist, it will attempt to spawn one.
-    ///     If the holder has no actions component, this will give them one.
+    /// Adds an action to an action holder. If the given entity does not exist, it will attempt to spawn one.
+    /// If the holder has no actions component, this will give them one.
     /// </summary>
     /// <param name="performer">Entity to receive the actions</param>
     /// <param name="actionId">Action entity to add</param>
@@ -642,7 +689,7 @@ public abstract partial class SharedActionsSystem : EntitySystem
     }
 
     /// <summary>
-    ///     Adds a pre-existing action.
+    /// Adds a pre-existing action.
     /// </summary>
     public bool AddAction(Entity<ActionsComponent?> performer,
         Entity<ActionComponent?> action,
@@ -663,8 +710,8 @@ public abstract partial class SharedActionsSystem : EntitySystem
     }
 
     /// <summary>
-    ///     Adds a pre-existing action. This also bypasses the requirement that the given action must be stored in a
-    ///     valid action container.
+    /// Adds a pre-existing action. This also bypasses the requirement that the given action must be stored in a
+    /// valid action container.
     /// </summary>
     public bool AddActionDirect(Entity<ActionsComponent?> performer,
         Entity<ActionComponent?>? action)
@@ -760,6 +807,12 @@ public abstract partial class SharedActionsSystem : EntitySystem
         AddActionDirect(performer, actionId);
     }
 
+    /// <summary>
+    /// Gets all actions available to an entity.
+    /// </summary>
+    /// <param name="holderId">Entity to check actions for.</param>
+    /// <param name="actions"><see cref="ActionsComponent"/> for the entity.</param>
+    /// <returns>An IEnumerable of all valid actions found.</returns>
     public IEnumerable<Entity<ActionComponent>> GetActions(EntityUid holderId, ActionsComponent? actions = null)
     {
         if (!Resolve(holderId, ref actions, false))
@@ -775,7 +828,7 @@ public abstract partial class SharedActionsSystem : EntitySystem
     }
 
     /// <summary>
-    ///     Remove any actions that were enabled by some other entity. Useful when unequiping items that grant actions.
+    /// Remove any actions that were enabled by some other entity. Useful when unequiping items that grant actions.
     /// </summary>
     public void RemoveProvidedActions(EntityUid performer, EntityUid container, ActionsComponent? comp = null)
     {
@@ -793,7 +846,7 @@ public abstract partial class SharedActionsSystem : EntitySystem
     }
 
     /// <summary>
-    ///     Removes a single provided action provided by another entity.
+    /// Removes a single provided action provided by another entity.
     /// </summary>
     public void RemoveProvidedAction(EntityUid performer, EntityUid container, EntityUid actionId, ActionsComponent? comp = null)
     {
@@ -818,6 +871,11 @@ public abstract partial class SharedActionsSystem : EntitySystem
         RemoveAction((actions, comp), (ent, ent));
     }
 
+    /// <summary>
+    /// Removes an action entity from an entity, if the action exists.
+    /// </summary>
+    /// <param name="performer">Entity to have the action removed.</param>
+    /// <param name="action">Action entity to remove.</param>
     public void RemoveAction(Entity<ActionsComponent?> performer, Entity<ActionComponent?>? action)
     {
         if (GetAction(action) is not {} ent)
@@ -860,6 +918,12 @@ public abstract partial class SharedActionsSystem : EntitySystem
         // See client-side system for UI code.
     }
 
+    /// <summary>
+    /// Checks if an action is valid to perform.
+    /// </summary>
+    /// <param name="ent">Action entity to check.</param>
+    /// <param name="canReach">Set true if the action has been determined/is assumed to be within interaction reach. If false, the action must permit not checking the reach via <see cref="TargetActionComponent.CheckCanAccess"/>.</param>
+    /// <returns></returns>
     public bool ValidAction(Entity<ActionComponent> ent, bool canReach = true)
     {
         var (uid, comp) = ent;
@@ -963,6 +1027,9 @@ public abstract partial class SharedActionsSystem : EntitySystem
     }
     #endregion
 
+    /// <summary>
+    /// Sets the entity icon of the action.
+    /// </summary>
     public void SetEntityIcon(Entity<ActionComponent?> ent, EntityUid? icon)
     {
         if (!_actionQuery.Resolve(ent, ref ent.Comp) || ent.Comp.EntityIcon == icon)
@@ -972,6 +1039,9 @@ public abstract partial class SharedActionsSystem : EntitySystem
         DirtyField(ent, ent.Comp, nameof(ActionComponent.EntIcon));
     }
 
+    /// <summary>
+    /// Sets the icon of the action as a sprite.
+    /// </summary>
     public void SetIcon(Entity<ActionComponent?> ent, SpriteSpecifier? icon)
     {
         if (!_actionQuery.Resolve(ent, ref ent.Comp) || ent.Comp.Icon == icon)
@@ -981,6 +1051,9 @@ public abstract partial class SharedActionsSystem : EntitySystem
         DirtyField(ent, ent.Comp, nameof(ActionComponent.Icon));
     }
 
+    /// <summary>
+    /// Sets the icon to show when a toggle action is considered "on".
+    /// </summary>
     public void SetIconOn(Entity<ActionComponent?> ent, SpriteSpecifier? iconOn)
     {
         if (!_actionQuery.Resolve(ent, ref ent.Comp) || ent.Comp.IconOn == iconOn)
@@ -990,6 +1063,10 @@ public abstract partial class SharedActionsSystem : EntitySystem
         DirtyField(ent, ent.Comp, nameof(ActionComponent.IconOn));
     }
 
+    /// <summary>
+    /// Sets the color to modulate the sprite icon with.
+    /// </summary>
+    /// <remarks>Used for e.g. decal-placement actions.</remarks>
     public void SetIconColor(Entity<ActionComponent?> ent, Color color)
     {
         if (!_actionQuery.Resolve(ent, ref ent.Comp) || ent.Comp.IconColor == color)
@@ -1013,6 +1090,9 @@ public abstract partial class SharedActionsSystem : EntitySystem
             Log.Error($"Tried to set event of {ToPrettyString(uid):action} but nothing handled it!");
     }
 
+    /// <summary>
+    /// Gets the <see cref="BaseActionEvent"/> associated with the action entity.
+    /// </summary>
     public BaseActionEvent? GetEvent(EntityUid uid)
     {
         DebugTools.Assert(_actionQuery.HasComp(uid), $"Entity {ToPrettyString(uid)} is missing ActionComponent");
@@ -1021,6 +1101,9 @@ public abstract partial class SharedActionsSystem : EntitySystem
         return ev.Event;
     }
 
+    /// <summary>
+    /// Sets the target of any action target components associated with the action entity.
+    /// </summary>
     public bool SetEventTarget(EntityUid uid, EntityUid target)
     {
         DebugTools.Assert(_actionQuery.HasComp(uid), $"Entity {ToPrettyString(uid)} is missing ActionComponent");
@@ -1030,7 +1113,7 @@ public abstract partial class SharedActionsSystem : EntitySystem
     }
 
     /// <summary>
-    ///     Checks if the action has a cooldown and if it's still active
+    /// Checks if the action has a cooldown and if it's still active
     /// </summary>
     public bool IsCooldownActive(ActionComponent action, TimeSpan? curTime = null)
     {
