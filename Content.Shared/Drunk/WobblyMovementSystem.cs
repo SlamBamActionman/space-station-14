@@ -16,7 +16,12 @@ public sealed partial class WobblyMovementSystem : EntitySystem
     [SubscribeLocalEvent]
     private void OnStatusApplied(Entity<WobblyMovementStatusEffectComponent> entity, ref StatusEffectAppliedEvent args)
     {
+        if (_timing.ApplyingState)
+            return;
+
         entity.Comp.NextUpdate = _timing.CurTime;
+        Logger.Debug("Log1 " + entity.Comp.NextUpdate.ToString() + " " + _timing.IsFirstTimePredicted.ToString() + " " + _timing.ApplyingState);
+        DirtyField(entity.AsNullable(), nameof(WobblyMovementStatusEffectComponent.NextUpdate));
     }
 
     [SubscribeLocalEvent]
@@ -25,11 +30,18 @@ public sealed partial class WobblyMovementSystem : EntitySystem
         if (!TryComp<StatusEffectComponent>(entity, out var statusEffect))
             return;
 
-        if (_timing.CurTime >= entity.Comp.NextUpdate)
+        if (_timing.CurTime >= entity.Comp.NextUpdate && statusEffect.AppliedTo.HasValue)
         {
-            var rand = SharedRandomExtensions.PredictedRandom(_timing, GetNetEntity(entity), GetNetEntity(statusEffect.AppliedTo));
+
+            var rand = SharedRandomExtensions.PredictedRandom(_timing, GetNetEntity(statusEffect.AppliedTo.Value));
+
+            var logtest = SharedRandomExtensions.HashCodeCombine((int)_timing.CurTick.Value, GetNetEntity(statusEffect.AppliedTo.Value).Id);
 
             entity.Comp.NextUpdate += TimeSpan.FromSeconds(rand.NextFloat(entity.Comp.UpdateIntervalIntervals.X, entity.Comp.UpdateIntervalIntervals.Y));
+
+            Logger.Debug("Log2 " + entity.Comp.NextUpdate.ToString() + " " + _timing.IsFirstTimePredicted.ToString() + " " + _timing.ApplyingState);
+            Logger.Debug("Log3 " + _timing.CurTick.Value + " " + GetNetEntity(entity).Id + " " + (GetNetEntity(statusEffect.AppliedTo)?.Id ?? 0) + " " + logtest.ToString());
+            Logger.Debug("Log4 " + entity.Comp.NextUpdate.ToString());
 
             // We don't scale the effect based on your movement speed because, by virtue of moving slower, the effect becomes easier to control.
             // If you move slower you end up having more time to adjust manually using movement input before drifting too far,
@@ -51,6 +63,8 @@ public sealed partial class WobblyMovementSystem : EntitySystem
 
             var newAngle = rand.NextAngle(-effectStrength * entity.Comp.MaxAngle, effectStrength * entity.Comp.MaxAngle);
             entity.Comp.CurrentAngle = newAngle;
+
+            Logger.Debug(entity.Comp.CurrentAngle.ToString());
 
             DirtyFields(entity.AsNullable(),
                 null,
