@@ -87,7 +87,7 @@ public sealed partial class SharedEntityEffectsSystem : EntitySystem, IEntityEff
         }
 
         return success;
-    }  
+    }
 
     /// <summary>
     /// Applies a list of entity effects to a target entity. Works using <see cref="TryApplyEffects"/>
@@ -137,9 +137,9 @@ public sealed partial class SharedEntityEffectsSystem : EntitySystem, IEntityEff
     /// <param name="user">The entity causing the effect.</param>
     public void ApplyEffect(EntityUid target, EntityEffect effect, float scale = 1f, EntityUid? user = null)
     {
-        // Clamp the scale if the effect doesn't allow scaling.
+        // Clamp the scale to 1 if the effect doesn't allow scaling.
         if (!effect.Scaling)
-            scale = Math.Min(scale, 1f);
+            scale = 1f;
 
         if (effect.Impact is { } level)
         {
